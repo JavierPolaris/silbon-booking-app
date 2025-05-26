@@ -16,7 +16,8 @@ export async function getTimifyToken() {
     });
 
     console.log("✅ Token recibido:", response.data); // <-- para debug
-    return response.data.access_token; // <-- esta es la clave
+    return response.data.accessToken;
+
   } catch (error) {
     console.error('❌ Error al obtener token:', error.response?.data || error.message);
     return null;
