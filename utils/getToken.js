@@ -15,7 +15,8 @@ export async function getTimifyToken() {
       appsecret: clientSecret
     });
 
-    return response.data.token; // <- este es el campo correcto según la doc oficial
+    console.log("✅ Token recibido:", response.data); // <-- para debug
+    return response.data.access_token; // <-- esta es la clave
   } catch (error) {
     console.error('❌ Error al obtener token:', error.response?.data || error.message);
     return null;

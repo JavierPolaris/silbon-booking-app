@@ -78,10 +78,11 @@ router.get('/services/:companyId', async (req, res) => {
 router.get('/debug/token', async (req, res) => {
   try {
     const token = await getTimifyToken();
-    res.json({ token });
+    res.json({ token }); // <-- devuelve como propiedad `token`
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 export default router;
