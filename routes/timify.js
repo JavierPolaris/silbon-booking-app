@@ -32,25 +32,29 @@ router.get('/availability', async (req, res) => {
         res.status(500).json({ error: 'Error al consultar disponibilidad' });
     }
 });
-// Obtener compañías (para sacar el companyId)
+
 router.get('/companies', async (req, res) => {
-    try {
-        const token = await getTimifyToken();
-        if (!token) return res.status(500).json({ error: 'Token error' });
+  try {
+    const token = await getTimifyToken();
+    if (!token) return res.status(500).json({ error: 'Token error' });
 
-        const response = await axios.get('https://api.timify.com/v1/companies', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+    const response = await axios.get('https://api.timify.com/v1/companies', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        enterprise_id: '68341fe7cadd8241591d1037' // tu mismo App ID (por probar)
+      }
+    });
 
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error al obtener compañías' });
-    }
+    res.json(response.data);
+  } catch (error) {
+    console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error al obtener compañías' });
+  }
 });
+
+
 
 // Obtener servicios de una compañía concreta
 router.get('/services/:companyId', async (req, res) => {
