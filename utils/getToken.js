@@ -10,7 +10,8 @@ export async function getTimifyToken() {
   }
 
   try {
-    const response = await axios.post('https://enterprise-api.timify.com/v1/oauth/token', {
+    const response = await axios.post('https://api.timify.com/v1/auth/token', {
+
       grant_type: 'client_credentials',
       client_id: clientId,
       client_secret: clientSecret
