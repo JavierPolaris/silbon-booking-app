@@ -34,24 +34,24 @@ router.get('/availability', async (req, res) => {
 });
 
 router.get('/companies', async (req, res) => {
-  try {
-    const token = await getTimifyToken();
-    if (!token) return res.status(500).json({ error: 'Token error' });
+    try {
+        const token = await getTimifyToken();
+        if (!token) return res.status(500).json({ error: 'Token error' });
 
-    const response = await axios.get('https://api.timify.com/v1/companies', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      params: {
-        enterprise_id: '68341fe7cadd8241591d1037' // tu mismo App ID (por probar)
-      }
-    });
+        const response = await axios.get('https://api.timify.com/v1/companies', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                enterprise_id: '68341fe7cadd8241591d1037' // tu mismo App ID (por probar)
+            }
+        });
 
-    res.json(response.data);
-  } catch (error) {
-    console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error al obtener compañías' });
-  }
+        res.json(response.data);
+    } catch (error) {
+        console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Error al obtener compañías' });
+    }
 });
 
 // Obtener servicios de una compañía concreta
@@ -66,10 +66,12 @@ router.get('/services/:companyId', async (req, res) => {
             `https://api.timify.com/v1/companies/${companyId}/services`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'company-id': companyId
                 }
             }
         );
+
 
         res.json(response.data);
     } catch (error) {
@@ -88,41 +90,6 @@ router.get('/debug/token', async (req, res) => {
 });
 
 
-router.get('/my-companies', async (req, res) => {
-  try {
-    const token = await getTimifyToken();
-    if (!token) return res.status(500).json({ error: 'Token error' });
-
-    const response = await axios.post(
-      'https://api.timify.com/v1/graphql',
-      {
-        query: `
-          query {
-            getAppCompanies {
-              id
-              name
-              enterpriseId
-              settings {
-                companyName
-              }
-            }
-          }
-        `
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    res.json(response.data.data.getAppCompanies);
-  } catch (error) {
-    console.error('❌ Error al obtener getAppCompanies:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error al obtener compañías' });
-  }
-});
 
 
 export default router;
