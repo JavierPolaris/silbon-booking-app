@@ -54,8 +54,6 @@ router.get('/companies', async (req, res) => {
   }
 });
 
-
-
 // Obtener servicios de una compañía concreta
 router.get('/services/:companyId', async (req, res) => {
     const { companyId } = req.params;
@@ -87,6 +85,43 @@ router.get('/debug/token', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+
+router.get('/my-companies', async (req, res) => {
+  try {
+    const token = await getTimifyToken();
+    if (!token) return res.status(500).json({ error: 'Token error' });
+
+    const response = await axios.post(
+      'https://api.timify.com/v1/graphql',
+      {
+        query: `
+          query {
+            getAppCompanies {
+              id
+              name
+              enterpriseId
+              settings {
+                companyName
+              }
+            }
+          }
+        `
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    res.json(response.data.data.getAppCompanies);
+  } catch (error) {
+    console.error('❌ Error al obtener getAppCompanies:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error al obtener compañías' });
+  }
 });
 
 
