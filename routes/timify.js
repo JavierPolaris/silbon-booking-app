@@ -14,7 +14,7 @@ router.get('/availability', async (req, res) => {
     const serviceId = 'TU_SERVICE_ID';
 
     const response = await axios.get(
-      `https://enterprise-api.timify.com/v1/events/availability`,
+      `https://api.timify.com/v1/events/availability`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -38,7 +38,7 @@ router.get('/companies', async (req, res) => {
     const token = await getTimifyToken();
     if (!token) return res.status(500).json({ error: 'Token error' });
 
-    const response = await axios.get('https://enterprise-api.timify.com/v1/companies', {
+    const response = await axios.get('https://api.timify.com/v1/companies', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -60,7 +60,7 @@ router.get('/services/:companyId', async (req, res) => {
     if (!token) return res.status(500).json({ error: 'Token error' });
 
     const response = await axios.get(
-      `https://enterprise-api.timify.com/v1/companies/${companyId}/services`,
+      `https://api.timify.com/v1/companies/${companyId}/services`,
       {
         headers: {
           Authorization: `Bearer ${token}`

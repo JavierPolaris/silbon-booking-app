@@ -11,13 +11,11 @@ export async function getTimifyToken() {
 
   try {
     const response = await axios.post('https://api.timify.com/v1/auth/token', {
-
-      grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: clientSecret
+      appid: clientId,
+      appsecret: clientSecret
     });
 
-    return response.data.access_token;
+    return response.data.token; // <- este es el campo correcto según la doc oficial
   } catch (error) {
     console.error('❌ Error al obtener token:', error.response?.data || error.message);
     return null;
