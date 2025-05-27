@@ -4,6 +4,28 @@ import { getTimifyToken } from '../utils/getToken.js';
 
 const router = express.Router();
 
+router.get('/me', async (req, res) => {
+    try {
+        const token = await getTimifyToken();
+        if (!token) return res.status(500).json({ error: 'Token error' });
+
+        const response = await axios.get('https://api.timify.com/v1/me', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                accept: 'application/json'
+            }
+        });
+
+        console.log("👤 Info del token:", response.data);
+        res.json(response.data);
+    } catch (error) {
+        console.error('❌ Error en /me:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Error al obtener información del token' });
+    }
+});
+
+
+
 router.get('/availability', async (req, res) => {
     try {
         const token = await getTimifyToken();
