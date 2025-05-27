@@ -39,6 +39,7 @@ router.get('/companies', async (req, res) => {
         if (!token) return res.status(500).json({ error: 'Token error' });
 
         const enterpriseId = '67ea4f04d5b5e2b82079de7c';
+        console.log("TOKEN USADO:", token);
 
         const response = await axios.get('https://api.timify.com/v1/companies', {
             headers: {
