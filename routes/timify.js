@@ -5,8 +5,6 @@ import { getAppToken } from '../utils/getAppToken.js';
 
 
 const router = express.Router();
-const TIMIFY_APP_ID = process.env.TIMIFY_CLIENT_ID;
-const TIMIFY_APP_SECRET = process.env.TIMIFY_CLIENT_SECRET;
 
 const ENTERPRISE_ID = process.env.TIMIFY_ENTERPRISE_ID;
 
