@@ -157,6 +157,7 @@ router.get('/services/:companyId', async (req, res) => {
     );
 
     const services = apiRes.data.data;
+    console.log('Timify response:', apiRes.data);
 
     return res.json({ services });
 
