@@ -148,19 +148,12 @@ router.get('/services/:companyId', async (req, res) => {
 
     // 1) Llamamos al endpoint de TODAS las sucursales
     const apiRes = await axios.get(
-      'https://api.timify.com/v1/booker-services/companies',
-      {
-        headers: {
-          accept: 'application/json',
-          authorization: `Bearer ${token}`,
-        },
-        params: {
-          enterprise_id: enterpriseId,
-          with_full_attributes: false,
-          sort: 'name',
-          sort_type: 'asc'
-        }
-      }
+       `https://api.timify.com/api/booking/service?enterpriseId=67ea4f04d5b5e2b82079de7c&locationId=${req.params.branchId}`,
+  {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  }
     );
 
     // 2) Obtenemos el array de sucursales
