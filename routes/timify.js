@@ -1,4 +1,4 @@
-import express from 'express'; 
+import express from 'express';
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
@@ -19,7 +19,7 @@ router.get('/availability', async (req, res) => {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-                params: { 
+                params: {
                     companyId,
                     serviceId
                 }
@@ -41,14 +41,14 @@ router.get('/companies', async (req, res) => {
         const enterpriseId = '67ea4f04d5b5e2b82079de7c';
         console.log("TOKEN USADO:", token);
 
-        const response = await axios.get('https://api.timify.com/v1/companies', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            params: {
-                enterprise_id: enterpriseId
+        const response = await axios.get(
+            `https://api.timify.com/v1/enterprises/${enterpriseId}/companies`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
             }
-        });
+        );
 
         // Extraemos solo los datos necesarios, si quieres devolver todo el array tal cual, puedes omitir este paso
         const companies = response.data?.data?.map(c => ({
