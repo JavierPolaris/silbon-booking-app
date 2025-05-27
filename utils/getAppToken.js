@@ -1,25 +1,25 @@
 import axios from 'axios';
 
-export async function getAppToken() {
-  const appId = process.env.TIMIFY_APP_ID;
-  const appSecret = process.env.TIMIFY_APP_SECRET;
+export async function getTimifyToken() {
+  const clientId = process.env.TIMIFY_APP_ID;
+  const clientSecret = process.env.TIMIFY_APP_SECRET;
 
-  if (!appId || !appSecret) {
-    console.error("❌ Faltan variables TIMIFY_APP_ID o TIMIFY_APP_SECRET");
+  if (!clientId || !clientSecret) {
+    console.error("❌ Variables de entorno no definidas");
     return null;
   }
 
   try {
     const response = await axios.post('https://api.timify.com/v1/auth/token', {
-      appid: appId,
-      appsecret: appSecret,
+      appid: clientId,
+      appsecret: clientSecret
     });
 
-    console.log("✅ App Token recibido:", response.data.accessToken);
+    console.log("✅ Token recibido:", response.data);
     return response.data.accessToken;
 
   } catch (error) {
-    console.error('❌ Error en getAppToken:', error.response?.data || error.message);
+    console.error('❌ Error al obtener token:', error.response?.data || error.message);
     return null;
   }
 }
