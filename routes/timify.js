@@ -71,17 +71,20 @@ router.get('/companies', async (req, res) => {
         const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
         console.log("TOKEN USADO:", token);
 
-        const response = await axios.get('https://api.timify.com/v1/companies', {
+        const response = await axios.get(`https://api.timify.com/v1/enterprises/${enterpriseId}/companies`, {
             headers: {
                 accept: 'application/json',
                 authorization: `Bearer ${token}`
-            },
-            params: {
-                enterprise_id: enterpriseId
             }
         });
 
-        const companies = response.data?.data?.map(c => ({
+        // Si la respuesta es correcta pero no hay datos
+        if (!response.data?.data) {
+            console.warn("⚠️ No se encontraron compañías en la respuesta");
+            return res.json([]);
+        }
+
+        const companies = response.data.data.map(c => ({
             id: c.id,
             name: c.name,
             email: c.contactEmail,
@@ -90,7 +93,7 @@ router.get('/companies', async (req, res) => {
             address: c.address?.formatted || '',
             isOnline: c.onlineStatus?.isOnline,
             timezone: c.timezone
-        })) || [];
+        }));
 
         res.json(companies);
     } catch (error) {
@@ -98,6 +101,7 @@ router.get('/companies', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener compañías' });
     }
 });
+
 
 
 // SERVICIOS
