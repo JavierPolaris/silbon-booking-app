@@ -65,26 +65,29 @@ router.get('/availability', async (req, res) => {
 // EMPRESAS
 router.get('/companies', async (req, res) => {
     try {
-        const token = await getTimifyToken();
+        const token = await getTimifyToken(); // <-- token ya funciona
         if (!token) return res.status(500).json({ error: 'Token error' });
 
-        const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-        console.log("TOKEN USADO:", token);
+        const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID; // o hardcoded si prefieres
+        console.log("🔑 TOKEN USADO:", token);
+        console.log("🏢 ENTERPRISE_ID:", enterpriseId);
 
-        const response = await axios.get(`https://api.timify.com/v1/enterprises/${enterpriseId}/companies`, {
+        const options = {
+            method: 'GET',
+            url: 'https://api.timify.com/v1/companies',
             headers: {
                 accept: 'application/json',
-                authorization: `Bearer ${token}`
+                authorization: token // <- ya incluye "Bearer" si es como el de tu ejemplo funcional
+            },
+            params: {
+                enterprise_id: enterpriseId
             }
-        });
+        };
 
-        // Si la respuesta es correcta pero no hay datos
-        if (!response.data?.data) {
-            console.warn("⚠️ No se encontraron compañías en la respuesta");
-            return res.json([]);
-        }
+        const response = await axios.request(options);
 
-        const companies = response.data.data.map(c => ({
+        // Procesamos los datos
+        const companies = response.data?.data?.map(c => ({
             id: c.id,
             name: c.name,
             email: c.contactEmail,
@@ -93,7 +96,7 @@ router.get('/companies', async (req, res) => {
             address: c.address?.formatted || '',
             isOnline: c.onlineStatus?.isOnline,
             timezone: c.timezone
-        }));
+        })) || [];
 
         res.json(companies);
     } catch (error) {
