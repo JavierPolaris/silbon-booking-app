@@ -28,7 +28,7 @@ router.get('/availability', async (req, res) => {
   } catch (error) {
     console.error('❌ Error en disponibilidad:', error.response?.data || error.message);
     res.status(500).json({ error: 'Error al consultar disponibilidad' });
-  }
+  } 
 });
 
 router.get('/companies', async (req, res) => {
