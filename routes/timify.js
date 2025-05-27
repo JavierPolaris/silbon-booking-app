@@ -143,7 +143,7 @@ router.get('/services/:companyId', async (req, res) => {
     const token = await getTimifyToken();
     if (!token) {
       return res.status(500).json({ error: 'Token error' });
-    }
+    } 
 
     // Llamamos al endpoint que devuelve TODAS las sucursales
     const apiRes = await axios.get(
