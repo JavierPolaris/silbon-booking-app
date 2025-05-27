@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
+import { getAppToken } from '../utils/getToken.js';
 
 const router = express.Router();
 const TIMIFY_APP_ID = process.env.TIMIFY_APP_ID;
@@ -38,7 +39,7 @@ router.get('/availability', async (req, res) => {
 
 router.get('/companies', async (req, res) => {
   try {
-    const token = await getAppToken();
+    const token = await getTimifyToken();
     if (!token) return res.status(500).json({ error: 'No se pudo obtener token de app' });
 
     const response = await axios.get('https://api.timify.com/v1/companies', {
