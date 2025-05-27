@@ -134,7 +134,7 @@ router.get('/services', async (req, res) => {
 router.get('/services/:companyId', async (req, res) => {
   const { companyId } = req.params;
   const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID; // o pásalo en req.query
-
+    console.log('🌐 enterpriseId:', enterpriseId);
   if (!enterpriseId) {
     return res.status(400).json({ error: 'enterprise_id no proporcionado' });
   }
@@ -147,7 +147,7 @@ router.get('/services/:companyId', async (req, res) => {
 
     // Llamamos al endpoint que devuelve TODAS las sucursales
     const apiRes = await axios.get(
-      'https://api.timify.com/v1/booker-services/companies',
+      `https://api.timify.com/v1/booker-services/company/${companyId}`,
       {
         headers: {
           accept: 'application/json',
