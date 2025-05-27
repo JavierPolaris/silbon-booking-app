@@ -130,11 +130,12 @@ router.get('/services', async (req, res) => {
     }
 });
 
+
 // SERVICIOS POR TiENDA
 router.get('/services/:companyId', async (req, res) => {
   const { companyId } = req.params;
-  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID; // o pásalo en req.query
-    console.log('🌐 enterpriseId:', enterpriseId);
+  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+  
   if (!enterpriseId) {
     return res.status(400).json({ error: 'enterprise_id no proporcionado' });
   }
@@ -143,11 +144,11 @@ router.get('/services/:companyId', async (req, res) => {
     const token = await getTimifyToken();
     if (!token) {
       return res.status(500).json({ error: 'Token error' });
-    } 
+    }
 
-    // Llamamos al endpoint que devuelve TODAS las sucursales
+    // 1) Llamamos al endpoint de TODAS las sucursales
     const apiRes = await axios.get(
-      `https://api.timify.com/v1/booker-services/company/${companyId}`,
+      'https://api.timify.com/v1/booker-services/companies',
       {
         headers: {
           accept: 'application/json',
@@ -162,8 +163,18 @@ router.get('/services/:companyId', async (req, res) => {
       }
     );
 
-    // Devolvemos directamente los servicios de la sucursal
-return res.json({ services: apiRes.data.services });
+    // 2) Obtenemos el array de sucursales
+    const companies = apiRes.data.data.companies;
+
+    // 3) Buscamos la que coincide con companyId
+    const branch = companies.find(c => c.id === companyId);
+    if (!branch) {
+      return res.status(404).json({ error: 'Sucursal no encontrada' });
+    }
+
+    // 4) Devolvemos sus servicios
+    return res.json({ services: branch.services });
+
   } catch (err) {
     console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
     return res.status(500).json({ error: 'Error al obtener servicios' });
