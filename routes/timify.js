@@ -42,7 +42,7 @@ router.get('/companies', async (req, res) => {
         console.log("TOKEN USADO:", token);
 
         const response = await axios.get(
-            `https://api.timify.com/v1/enterprises/${enterpriseId}/companies`,
+            `'https://api.timify.com/v1/companies?enterprise_id=67ea4f04d5b5e2b82079de7c'`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
