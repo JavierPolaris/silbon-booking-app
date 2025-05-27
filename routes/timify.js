@@ -112,18 +112,20 @@ router.get('/services/:companyId', async (req, res) => {
             `https://api.timify.com/v1/companies/${companyId}/services`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'company-id': companyId
+                    accept: 'application/json',
+                    authorization: token
                 }
             }
         );
 
+        // Puedes mapear aquí si quieres devolver solo datos específicos
         res.json(response.data);
     } catch (error) {
         console.error('❌ Error al obtener servicios:', error.response?.data || error.message);
         res.status(500).json({ error: 'Error al obtener servicios' });
     }
 });
+
 
 
 // DEBUG TOKEN
