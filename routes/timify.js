@@ -1,7 +1,6 @@
 import express from 'express';
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
-import { getAppToken } from '../utils/getToken.js';
 
 const router = express.Router();
 const TIMIFY_APP_ID = process.env.TIMIFY_APP_ID;
