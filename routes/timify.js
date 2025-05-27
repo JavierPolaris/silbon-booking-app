@@ -38,21 +38,36 @@ router.get('/companies', async (req, res) => {
         const token = await getTimifyToken();
         if (!token) return res.status(500).json({ error: 'Token error' });
 
+        const enterpriseId = '67ea4f04d5b5e2b82079de7c';
+
         const response = await axios.get('https://api.timify.com/v1/companies', {
             headers: {
                 Authorization: `Bearer ${token}`
             },
             params: {
-                enterprise_id: '67ea4f04d5b5e2b82079de7c' // tu mismo App ID (por probar)
+                enterprise_id: enterpriseId
             }
         });
 
-        res.json(response.data);
+        // Extraemos solo los datos necesarios, si quieres devolver todo el array tal cual, puedes omitir este paso
+        const companies = response.data?.data?.map(c => ({
+            id: c.id,
+            name: c.name,
+            email: c.contactEmail,
+            phone: c.phone?.phone,
+            city: c.address?.city || '',
+            address: c.address?.formatted || '',
+            isOnline: c.onlineStatus?.isOnline,
+            timezone: c.timezone
+        })) || [];
+
+        res.json(companies);
     } catch (error) {
         console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
         res.status(500).json({ error: 'Error al obtener compañías' });
     }
 });
+
 
 // Obtener servicios de una compañía concreta
 router.get('/services/:companyId', async (req, res) => {
