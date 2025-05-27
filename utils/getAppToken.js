@@ -6,7 +6,7 @@ export async function getAppToken() {
 
   if (!appId || !appSecret) {
     console.error("❌ Faltan variables TIMIFY_APP_ID o TIMIFY_APP_SECRET");
-    return null;
+    return null; 
   }
 
   try {
