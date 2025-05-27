@@ -162,16 +162,8 @@ router.get('/services/:companyId', async (req, res) => {
       }
     );
 
-    // El array viene en apiRes.data.data.companies
-    const companies = apiRes.data.data.companies;
-    const branch = companies.find(c => c.id === companyId);
-
-    if (!branch) {
-      return res.status(404).json({ error: 'Sucursal no encontrada' });
-    }
-
-    // Devolvemos solamente los servicios de esa sucursal
-    return res.json({ services: branch.services });
+    // Devolvemos directamente los servicios de la sucursal
+return res.json({ services: apiRes.data.services });
   } catch (err) {
     console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
     return res.status(500).json({ error: 'Error al obtener servicios' });
