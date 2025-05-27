@@ -5,8 +5,8 @@ import timifyRoutes from './routes/timify.js';
 
 dotenv.config();
 
-console.log("✅ ENV APP ID:", process.env.TIMIFY_APP_ID);
-console.log("✅ ENV APP SECRET:", process.env.TIMIFY_APP_SECRET?.slice(0, 5) + "...");
+console.log("🧪 ENV CLIENT ID:", process.env.TIMIFY_CLIENT_ID);
+console.log("🧪 ENV CLIENT SECRET:", process.env.TIMIFY_CLIENT_SECRET?.slice(0, 5) + "...");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
