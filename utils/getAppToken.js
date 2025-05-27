@@ -2,11 +2,11 @@
 import axios from 'axios';
 
 export async function getAppToken() {
-  const appId = process.env.TIMIFY_APP_ID;
-  const appSecret = process.env.TIMIFY_APP_SECRET;
+  const appId = process.env.TIMIFY_CLIENT_ID;
+  const appSecret = process.env.TIMIFY_CLIENT_SECRET;
 
   if (!appId || !appSecret) {
-    console.error("❌ Faltan variables TIMIFY_APP_ID o TIMIFY_APP_SECRET");
+    console.error("❌ Faltan variables TIMIFY_CLIENT_ID o TIMIFY_CLIENT_SECRET");
     return null;
   }
 

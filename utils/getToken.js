@@ -1,8 +1,9 @@
+// getToken.js
 import axios from 'axios';
 
 export async function getTimifyToken() {
-  const clientId = process.env.TIMIFY_APP_ID;
-  const clientSecret = process.env.TIMIFY_APP_SECRET;
+  const clientId = process.env.TIMIFY_CLIENT_ID;
+  const clientSecret = process.env.TIMIFY_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     console.error("❌ Variables de entorno no definidas");
@@ -15,7 +16,7 @@ export async function getTimifyToken() {
       appsecret: clientSecret
     });
 
-    console.log("✅ Token recibido:", response.data); // <-- para debug
+    console.log("✅ Token recibido:", response.data.accessToken);
     return response.data.accessToken;
 
   } catch (error) {
