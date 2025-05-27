@@ -102,26 +102,24 @@ router.get('/companies', async (req, res) => {
 
 
 // SERVICIOS
-router.get('/services', async (req, res) => {
+router.get('/services/:companyId', async (req, res) => {
+    const { companyId } = req.params;
+
     try {
         const token = await getTimifyToken();
         if (!token) return res.status(500).json({ error: 'Token error' });
 
         const response = await axios.get(
-            `https://api.timify.com/v1/services`,
+            https://api.timify.com/v1/companies/${companyId}/services,
             {
                 headers: {
                     accept: 'application/json',
                     authorization: token
-                },
-                params: {
-                    sort: 'name',
-                    sort_type: 'asc',
-                    with_full_attributes: false
                 }
             }
         );
 
+        // Puedes mapear aquí si quieres devolver solo datos específicos
         res.json(response.data);
     } catch (error) {
         console.error('❌ Error al obtener servicios:', error.response?.data || error.message);
