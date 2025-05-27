@@ -110,7 +110,7 @@ router.get('/services/:companyId', async (req, res) => {
         if (!token) return res.status(500).json({ error: 'Token error' });
 
         const response = await axios.get(
-            https://api.timify.com/v1/companies/${companyId}/services,
+            `https://api.timify.com/v1/companies/${companyId}/services`,
             {
                 headers: {
                     accept: 'application/json',
@@ -126,6 +126,7 @@ router.get('/services/:companyId', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener servicios' });
     }
 });
+
 
 
 
