@@ -42,8 +42,7 @@ router.get('/companies', async (req, res) => {
         console.log("TOKEN USADO:", token);
 
         const response = await axios.get(
-            `https://api.timify.com/v1/companies?enterprise_id=${enterpriseId}`
-,
+            `https://api.timify.com/v1/companies?enterprise_id=${enterpriseId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -51,9 +50,7 @@ router.get('/companies', async (req, res) => {
             }
         );
 
-        // 👇 Añade esto
-        console.log("📦 Raw response:", response.data);
-
+        // Extraemos solo los datos necesarios, si quieres devolver todo el array tal cual, puedes omitir este paso
         const companies = response.data?.data?.map(c => ({
             id: c.id,
             name: c.name,
@@ -71,7 +68,6 @@ router.get('/companies', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener compañías' });
     }
 });
-
 
 
 // Obtener servicios de una compañía concreta
