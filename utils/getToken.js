@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 export async function getTimifyToken() {
-const clientId = process.env.TIMIFY_APP_ID;
-const clientSecret = process.env.TIMIFY_APP_SECRET;
-
+  const clientId = process.env.TIMIFY_APP_ID;
+  const clientSecret = process.env.TIMIFY_APP_SECRET;
 
   if (!clientId || !clientSecret) {
     console.error("❌ Variables de entorno no definidas");
