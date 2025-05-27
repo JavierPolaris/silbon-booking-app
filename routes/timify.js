@@ -132,30 +132,50 @@ router.get('/services', async (req, res) => {
 
 // SERVICIOS POR TiENDA
 router.get('/services/:companyId', async (req, res) => {
-    const { companyId } = req.params;
+  const { companyId } = req.params;
+  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID; // o pásalo en req.query
 
-    try {
-        const token = await getTimifyToken();
-        if (!token) return res.status(500).json({ error: 'Token error' });
+  if (!enterpriseId) {
+    return res.status(400).json({ error: 'enterprise_id no proporcionado' });
+  }
 
-        const response = await axios.get(`https://api.timify.com/v1/companies/${companyId}/services`, {
-            headers: {
-                accept: 'application/json',
-                authorization: `Bearer ${token}`,
-                'company-id': companyId
-            },
-            params: {
-                sort: 'name',
-                sort_type: 'asc',
-                with_full_attributes: false
-            }
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('❌ Error al obtener servicios:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error al obtener servicios' });
+  try {
+    const token = await getTimifyToken();
+    if (!token) {
+      return res.status(500).json({ error: 'Token error' });
     }
+
+    // Llamamos al endpoint que devuelve TODAS las sucursales
+    const apiRes = await axios.get(
+      'https://api.timify.com/v1/booker-services/companies',
+      {
+        headers: {
+          accept: 'application/json',
+          authorization: `Bearer ${token}`,
+        },
+        params: {
+          enterprise_id: enterpriseId,
+          with_full_attributes: false,
+          sort: 'name',
+          sort_type: 'asc'
+        }
+      }
+    );
+
+    // El array viene en apiRes.data.data.companies
+    const companies = apiRes.data.data.companies;
+    const branch = companies.find(c => c.id === companyId);
+
+    if (!branch) {
+      return res.status(404).json({ error: 'Sucursal no encontrada' });
+    }
+
+    // Devolvemos solamente los servicios de esa sucursal
+    return res.json({ services: branch.services });
+  } catch (err) {
+    console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'Error al obtener servicios' });
+  }
 });
 
 
