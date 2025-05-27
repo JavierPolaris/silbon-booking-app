@@ -18,7 +18,7 @@ router.get('/availability', async (req, res) => {
       headers: {
         Authorization: `Bearer ${token}`
       },
-      params: {
+      params: { 
         companyId,
         serviceId
       }
