@@ -1,4 +1,4 @@
-import express from 'express'; 
+import express from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { getTimifyToken } from '../utils/getToken.js';
@@ -47,7 +47,7 @@ router.get('/availability', async (req, res) => {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-                params: { 
+                params: {
                     companyId,
                     serviceId
                 }
@@ -103,9 +103,7 @@ router.get('/companies', async (req, res) => {
 
 
 // SERVICIOS
-router.get('/services/:companyId', async (req, res) => {
-    const { companyId } = req.params;
-
+router.get('/services', async (req, res) => {
     try {
         const token = await getTimifyToken();
         if (!token) return res.status(500).json({ error: 'Token error' });
@@ -118,7 +116,6 @@ router.get('/services/:companyId', async (req, res) => {
                     authorization: token
                 },
                 params: {
-                    company_id: companyId,
                     sort: 'name',
                     sort_type: 'asc',
                     with_full_attributes: false
@@ -132,6 +129,7 @@ router.get('/services/:companyId', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener servicios' });
     }
 });
+
 
 
 
