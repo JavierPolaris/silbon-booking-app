@@ -143,7 +143,7 @@ router.get('/services/:companyId', async (req, res) => {
 
   try {
     const token = await getTimifyToken();
-    if (!token) {
+    if (!token || !token.accessToken) {
       return res.status(500).json({ error: 'Token error' });
     }
 
@@ -151,21 +151,20 @@ router.get('/services/:companyId', async (req, res) => {
       `https://api.timify.com/api/booking/service?enterpriseId=${enterpriseId}&locationId=${companyId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token.accessToken}`,
         }
       }
     );
 
-    const services = apiRes.data.data;
-    console.log('Timify response:', apiRes.data);
-
-    return res.json({ services });
+    // Devolvemos directamente los servicios
+    return res.json({ services: apiRes.data.data });
 
   } catch (err) {
     console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
     return res.status(500).json({ error: 'Error al obtener servicios' });
   }
 });
+
 
 
 
