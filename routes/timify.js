@@ -130,7 +130,33 @@ router.get('/services', async (req, res) => {
     }
 });
 
+// SERVICIOS POR TiENDA
+router.get('/services/:companyId', async (req, res) => {
+    const { companyId } = req.params;
 
+    try {
+        const token = await getTimifyToken();
+        if (!token) return res.status(500).json({ error: 'Token error' });
+
+        const response = await axios.get(`https://api.timify.com/v1/companies/${companyId}/services`, {
+            headers: {
+                accept: 'application/json',
+                authorization: `Bearer ${token}`,
+                'company-id': companyId
+            },
+            params: {
+                sort: 'name',
+                sort_type: 'asc',
+                with_full_attributes: false
+            }
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('❌ Error al obtener servicios:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Error al obtener servicios' });
+    }
+});
 
 
 
