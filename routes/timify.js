@@ -65,28 +65,21 @@ router.get('/availability', async (req, res) => {
 // EMPRESAS
 router.get('/companies', async (req, res) => {
     try {
-        const token = await getTimifyToken(); // <-- token ya funciona
+        const token = await getTimifyToken();
         if (!token) return res.status(500).json({ error: 'Token error' });
 
-        const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID; // o hardcoded si prefieres
-        console.log("🔑 TOKEN USADO:", token);
-        console.log("🏢 ENTERPRISE_ID:", enterpriseId);
+        const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
 
-        const options = {
-            method: 'GET',
-            url: 'https://api.timify.com/v1/companies',
+        const response = await axios.get('https://api.timify.com/v1/companies', {
             headers: {
                 accept: 'application/json',
-                authorization: token // <- ya incluye "Bearer" si es como el de tu ejemplo funcional
+                authorization: token
             },
             params: {
                 enterprise_id: enterpriseId
             }
-        };
+        });
 
-        const response = await axios.request(options);
-
-        // Procesamos los datos
         const companies = response.data?.data?.map(c => ({
             id: c.id,
             name: c.name,
