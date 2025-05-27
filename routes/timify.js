@@ -3,6 +3,9 @@ import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
 const router = express.Router();
+const TIMIFY_APP_ID = process.env.TIMIFY_APP_ID;
+const TIMIFY_APP_SECRET = process.env.TIMIFY_APP_SECRET;
+const ENTERPRISE_ID = process.env.TIMIFY_ENTERPRISE_ID;
 
 router.get('/availability', async (req, res) => {
     try {
@@ -34,39 +37,24 @@ router.get('/availability', async (req, res) => {
 });
 
 router.get('/companies', async (req, res) => {
-    try {
-        const token = await getTimifyToken();
-        if (!token) return res.status(500).json({ error: 'Token error' });
+  try {
+    const token = await getAppToken();
+    if (!token) return res.status(500).json({ error: 'No se pudo obtener token de app' });
 
-        const enterpriseId = '67ea4f04d5b5e2b82079de7c';
-        console.log("TOKEN USADO:", token);
+    const response = await axios.get('https://api.timify.com/v1/companies', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        enterprise_id: ENTERPRISE_ID
+      }
+    });
 
-        const response = await axios.get('https://api.timify.com/v1/companies', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            params: {
-                enterprise_id: enterpriseId
-            }
-        });
-
-        // Extraemos solo los datos necesarios, si quieres devolver todo el array tal cual, puedes omitir este paso
-        const companies = response.data?.data?.map(c => ({
-            id: c.id,
-            name: c.name,
-            email: c.contactEmail,
-            phone: c.phone?.phone,
-            city: c.address?.city || '',
-            address: c.address?.formatted || '',
-            isOnline: c.onlineStatus?.isOnline,
-            timezone: c.timezone
-        })) || [];
-
-        res.json(companies);
-    } catch (error) {
-        console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error al obtener compañías' });
-    }
+    res.json(response.data);
+  } catch (error) {
+    console.error('❌ Error al obtener compañías:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error al obtener compañías' });
+  }
 });
 
 
