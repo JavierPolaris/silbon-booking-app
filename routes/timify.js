@@ -43,7 +43,7 @@ router.get('/companies', async (req, res) => {
                 Authorization: `Bearer ${token}`
             },
             params: {
-                enterprise_id: '68341fe7cadd8241591d1037' // tu mismo App ID (por probar)
+                enterprise_id: '67ea4f04d5b5e2b82079de7c' // tu mismo App ID (por probar)
             }
         });
 
