@@ -6,13 +6,13 @@ export async function getAppToken() {
 
   if (!appId || !appSecret) {
     console.error("❌ Faltan variables TIMIFY_APP_ID o TIMIFY_APP_SECRET");
-    return null; 
+    return null;
   }
 
   try {
-    const response = await axios.post('https://api.timify.com/v1/oauth/token', {
-      applicationId: appId,
-      applicationSecret: appSecret,
+    const response = await axios.post('https://api.timify.com/v1/auth/token', {
+      appid: appId,
+      appsecret: appSecret,
     });
 
     console.log("✅ App Token recibido:", response.data.accessToken);
