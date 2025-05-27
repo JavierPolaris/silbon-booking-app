@@ -66,6 +66,7 @@ router.get('/companies', async (req, res) => {
             isOnline: c.onlineStatus?.isOnline,
             timezone: c.timezone
         })) || [];
+        console.log("📦 Raw response:", JSON.stringify(response.data, null, 2));
 
         res.json(companies);
     } catch (error) {
