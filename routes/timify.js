@@ -50,7 +50,9 @@ router.get('/companies', async (req, res) => {
             }
         );
 
-        // Extraemos solo los datos necesarios, si quieres devolver todo el array tal cual, puedes omitir este paso
+        // 👇 Añade esto
+        console.log("📦 Raw response:", response.data);
+
         const companies = response.data?.data?.map(c => ({
             id: c.id,
             name: c.name,
@@ -68,6 +70,7 @@ router.get('/companies', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener compañías' });
     }
 });
+
 
 
 // Obtener servicios de una compañía concreta
