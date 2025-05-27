@@ -1,4 +1,3 @@
-// getToken.js
 import axios from 'axios';
 
 export async function getTimifyToken() {
@@ -16,7 +15,7 @@ export async function getTimifyToken() {
       appsecret: clientSecret
     });
 
-    console.log("✅ Token recibido:", response.data.accessToken);
+    console.log("✅ Token recibido:", response.data);
     return response.data.accessToken;
 
   } catch (error) {
