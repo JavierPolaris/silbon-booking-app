@@ -79,37 +79,6 @@ router.get('/companies', async (req, res) => {
 });
 
 
-// 1) Sucursales + servicios
-router.get('/public-branches-services', async (req, res) => {
-  const token = await getTimifyToken();
-  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-  const { data } = await axios.get(
-    'https://api.timify.com/v1/booker-services/companies',
-    {
-      headers: { Authorization: `Bearer ${token.accessToken}` },
-      params: { enterprise_id: enterpriseId, with_full_attributes: false }
-    }
-  );
-  res.json(data.companies);
-});
-
-// 2) Disponibilidad pública
-router.get('/public-availability', async (req, res) => {
-  const { companyId, serviceId } = req.query;
-  const token = await getTimifyToken();
-  const { data } = await axios.get(
-    'https://api.timify.com/v1/booker-services/availabilities',
-    {
-      headers: { Authorization: `Bearer ${token.accessToken}` },
-      params: { company_id: companyId, service_id: serviceId }
-    }
-  );
-  res.json(data);
-});
-
-
-
-
 
 
 
