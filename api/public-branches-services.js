@@ -12,7 +12,8 @@ export default async function handler(req, res) {
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${token}`,
+
       },
       params: {
         enterprise_id: enterpriseId,
