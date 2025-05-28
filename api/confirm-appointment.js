@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         lastName,
         email,
         phoneNumber
-    } = body;
+    } = req.body;
 
 
     if (!reservationId || !secret || !firstName || !lastName || !email || !phoneNumber) {
