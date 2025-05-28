@@ -87,22 +87,22 @@ export default function BookingModal() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedCompany || !selectedService || !selectedDate || !selectedTime) return;
-        console.log('📋 Datos a enviar:', {
-            companyId: selectedCompany.id,
-            serviceId: selectedService.id,
-            resourceIds: selectedService.resource_ids,
-            date: new Date(selectedDate).toISOString().split('T')[0],
-            time: selectedTime
-        });
+
+        const resourceIds = selectedService?.resource_ids || selectedService?.resourceIds || [];
+
+        if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
+            alert('Este servicio no tiene recursos asignados. No se puede reservar.');
+            return;
+        }
+
         try {
-            // Paso 1: reservar slot
             const slotRes = await fetch('/api/book-slot', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     companyId: selectedCompany.id,
                     serviceId: selectedService.id,
-                    resourceIds: selectedService.resource_ids, // 👈 AÑADIDO NECESARIO
+                    resourceIds,
                     date: new Date(selectedDate).toISOString().split('T')[0],
                     time: selectedTime
                 })
@@ -117,8 +117,6 @@ export default function BookingModal() {
 
             const slotData = result.data;
 
-
-            // Paso 2: confirmar cita
             await fetch('/api/confirm-appointment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -135,13 +133,13 @@ export default function BookingModal() {
                 })
             });
 
-
             alert('Cita confirmada con éxito');
             setVisible(false);
         } catch (err) {
             console.error('Error al confirmar cita:', err);
         }
     };
+
 
     return (
         <>
