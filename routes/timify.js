@@ -84,18 +84,23 @@ router.get('/companies', async (req, res) => {
 router.get('/public-services', async (req, res) => {
   try {
     const token = await getTimifyToken();
+
     if (!token || !token.accessToken) {
+      console.log("⚠️ No hay token disponible");
       return res.status(500).json({ error: 'Token error' });
     }
 
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
 
     const response = await axios.get(
-      `https://api.timify.com/v1/booker-services/enterprise?enterprise_id=${enterpriseId}`,
+      `https://api.timify.com/v1/booker-services/enterprise`,
       {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${token.accessToken}`
+        },
+        params: {
+          enterprise_id: enterpriseId
         }
       }
     );
@@ -104,9 +109,10 @@ router.get('/public-services', async (req, res) => {
 
   } catch (err) {
     console.error('❌ Error al obtener servicios públicos:', err.response?.data || err.message);
-    return res.status(500).json({ error: 'Error al obtener servicios públicos' });
+    return res.status(500).json({ error: err.response?.data || err.message });
   }
 });
+
 
 
 
