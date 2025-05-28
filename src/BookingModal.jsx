@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './BookingModal.css';
 
 export default function BookingModal() {
@@ -6,16 +6,20 @@ export default function BookingModal() {
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
 
+  useEffect(() => {
+    fetch('/api/public-branches-services')
+      .then(res => res.json())
+      .then(data => setBranches(data))
+      .catch(err => console.error('Error cargando sucursales:', err));
+  }, []);
+
   const toggleModal = () => setVisible(!visible);
 
-  useEffect(() => {
-    if (visible) {
-      fetch('/api/public-branches-services') // O la ruta que tengas para listar sucursales
-        .then(res => res.json())
-        .then(data => setBranches(data))
-        .catch(err => console.error('Error cargando sucursales:', err));
-    }
-  }, [visible]);
+  const handleBranchSelect = (e) => {
+    const selectedId = e.target.value;
+    const branch = branches.find(b => b.id === selectedId);
+    setSelectedBranch(branch);
+  };
 
   return (
     <>
@@ -29,9 +33,8 @@ export default function BookingModal() {
             <h2>Reserva tu cita</h2>
             <p>Selecciona tu tienda más cercana</p>
 
-            {/* SELECTOR DE TIENDA */}
-            <select onChange={e => setSelectedBranch(e.target.value)} defaultValue="">
-              <option value="" disabled>Selecciona una tienda</option>
+            <select onChange={handleBranchSelect}>
+              <option value="">-- Selecciona una tienda --</option>
               {branches.map(branch => (
                 <option key={branch.id} value={branch.id}>
                   {branch.name}
@@ -40,9 +43,16 @@ export default function BookingModal() {
             </select>
 
             {selectedBranch && (
-              <div>
-                {/* Aquí después cargaremos servicios según la tienda */}
-                <p>Tienda seleccionada: {selectedBranch}</p>
+              <div style={{ marginTop: '1rem' }}>
+                <p><strong>Company ID:</strong> {selectedBranch.id}</p>
+                <p><strong>Field IDs:</strong></p>
+                <ul>
+                  {selectedBranch.customerFields.map(field => (
+                    <li key={field.id}>
+                      {field.type} → {field.translationKey} → {field.id}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
