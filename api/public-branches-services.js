@@ -29,9 +29,10 @@ export default async function handler(req, res) {
 
     console.log("📦 Respuesta de Timify:", data);
 
-    res.status(200).json(data.companies || []);
+    // ESTA ES LA LÍNEA IMPORTANTE
+    res.status(200).json(data.data.companies || []);
   } catch (err) {
     console.error('❌ Error al obtener sucursales:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error interno' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
