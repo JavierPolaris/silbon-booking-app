@@ -1,8 +1,11 @@
-// api/public-companies.js
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
 export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
+
   try {
     const token = await getTimifyToken();
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
