@@ -86,17 +86,28 @@ export default function BookingModal() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedCompany || !selectedService || !selectedDate || !selectedTime) return;
 
-        const resourceIds = selectedCompany.resources?.[0]?.id
-            ? [selectedCompany.resources[0].id]
-            : [];
+        if (!selectedCompany || !selectedService || !selectedDate || !selectedTime) {
+            alert('Faltan campos obligatorios');
+            return;
+        }
 
-
+        const resourceIds = selectedService?.resource_ids || selectedService?.resourceIds || [];
         if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
             alert('Este servicio no tiene recursos asignados. No se puede reservar.');
             return;
         }
+
+        const dayString = new Date(selectedDate).toISOString().split('T')[0];
+
+        console.log('📤 Enviando reserva con los siguientes datos:');
+        console.table({
+            companyId: selectedCompany.id,
+            serviceId: selectedService.id,
+            resourceIds,
+            date: dayString,
+            time: selectedTime
+        });
 
         try {
             const slotRes = await fetch('/api/book-slot', {
@@ -106,7 +117,7 @@ export default function BookingModal() {
                     companyId: selectedCompany.id,
                     serviceId: selectedService.id,
                     resourceIds,
-                    date: new Date(selectedDate).toISOString().split('T')[0],
+                    date: dayString,
                     time: selectedTime
                 })
             });
@@ -120,6 +131,7 @@ export default function BookingModal() {
 
             const slotData = result.data;
 
+            // Paso 2: confirmación
             await fetch('/api/confirm-appointment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -139,7 +151,7 @@ export default function BookingModal() {
             alert('Cita confirmada con éxito');
             setVisible(false);
         } catch (err) {
-            console.error('Error al confirmar cita:', err);
+            console.error('❌ Error al confirmar cita:', err);
         }
     };
 
