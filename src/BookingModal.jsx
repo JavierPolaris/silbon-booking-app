@@ -11,6 +11,8 @@ export default function BookingModal() {
     const [selectedService, setSelectedService] = useState(null);
     const [availability, setAvailability] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
+
 
     const [selectedDate, setSelectedDate] = useState(null);
 
@@ -61,6 +63,8 @@ export default function BookingModal() {
     };
 
     const handleTimeSelect = (day, time) => {
+        setSelectedDate(day);
+        setSelectedTime(time);
         console.log('Hora seleccionada:', day, time);
     };
     const handleDateChange = (date) => {
