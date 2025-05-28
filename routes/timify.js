@@ -79,6 +79,36 @@ router.get('/companies', async (req, res) => {
 });
 
 
+// RUTA: Disponibilidad pública desde booker-services
+router.get('/public-availability', async (req, res) => {
+  const { companyId, serviceId } = req.query;
+  const token = await getTimifyToken();
+
+  if (!token || !token.accessToken) {
+    return res.status(500).json({ error: 'Token error' });
+  }
+
+  try {
+    const response = await axios.get(
+      `https://api.timify.com/v1/booker-services/availabilities`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token.accessToken}`
+        },
+        params: {
+          company_id: companyId,
+          service_id: serviceId
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('❌ Error al consultar disponibilidad pública:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error al consultar disponibilidad pública' });
+  }
+});
 
 // RUTA: Servicios públicos por tienda desde booker-services
 router.get('/public-services', async (req, res) => {
