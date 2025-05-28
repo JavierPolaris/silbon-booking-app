@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     startTime
   } = req.body;
 
-  if (!firstName || !lastName || !email || !phone || !serviceId || !companyId || !startTime || !resourceId) {
+  if (!firstName || !lastName || !email || !phone || !serviceId || !companyId || !resourceId || !startTime) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
 
@@ -33,13 +33,11 @@ export default async function handler(req, res) {
       service_id: serviceId,
       company_id: companyId,
       resource_ids: [resourceId],
-      customer: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        language: 'es'
-      },
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone: phone,
+      language: 'es',
       startTime,
       customData: {
         notes: note || ''
