@@ -113,20 +113,22 @@ export default function BookingModal() {
                                             availableDates={availability}
                                             selectedDate={selectedDate}
                                             onDateChange={handleDateChange}
+                                            onTimeSelect={handleTimeSelect}
                                         />
                                         {selectedDate && (
                                             <div className="calendar-times">
                                                 {availability
                                                     .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
                                                     ?.times.map(time => (
-                                                        <button key={time} className="time-slot" onClick={() => onTimeSelect(time)}>
+                                                        <button key={time} className="time-slot" onClick={() => handleTimeSelect(selectedDate, time)}>
                                                             {time}
                                                         </button>
                                                     ))}
                                             </div>
                                         )}
 
-                                       
+
+
                                     </>
                                 )}
                             </>

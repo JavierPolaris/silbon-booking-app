@@ -16,6 +16,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-block-start: 5%;
 }
 
 .time-slot {
