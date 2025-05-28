@@ -70,7 +70,6 @@ export default function BookingModal() {
     };
 
     const handleTimeSelect = (day, time) => {
-        setSelectedDate(day);
         setSelectedTime(time);
         console.log('Hora seleccionada:', day, time);
     };
@@ -197,7 +196,11 @@ export default function BookingModal() {
                                                 {availability
                                                     .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
                                                     ?.times.map(time => (
-                                                        <button key={time} className={`time-slot ${time === selectedTime ? 'selected' : ''}`} onClick={() => handleTimeSelect(selectedDate, time)}>
+                                                        <button
+                                                            key={time}
+                                                            className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
+                                                            onClick={() => handleTimeSelect(selectedDate, time)} // ✅ PASAMOS selectedDate directamente
+                                                        >
                                                             {time}
                                                         </button>
                                                     ))}
