@@ -14,10 +14,13 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    if (!token) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/availability', {
       headers: {
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       params: {
         company_id: companyId,
@@ -27,7 +30,7 @@ export default async function handler(req, res) {
 
     res.status(200).json(data);
   } catch (err) {
-    console.error('Error al obtener disponibilidad:', err.message);
+    console.error('❌ Error al obtener disponibilidad:', err.response?.data || err.message);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
