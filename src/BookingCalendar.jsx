@@ -1,22 +1,29 @@
 // src/BookingCalendar.jsx
 import React from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import './BookingCalendar.css';
 
-export default function BookingCalendar({ availability, onTimeSelect }) {
+export default function BookingCalendar({ availableDates, selectedDate, onDateChange }) {
+  // Convertir array de fechas disponibles a objetos Date
+  const validDates = availableDates.map(d => new Date(d.day));
+
+  const isTileDisabled = ({ date }) => {
+    return !validDates.some(d =>
+      d.getFullYear() === date.getFullYear() &&
+      d.getMonth() === date.getMonth() &&
+      d.getDate() === date.getDate()
+    );
+  };
+
   return (
-    <div className="calendar-container">
-      {availability.map(day => (
-        <div key={day.day} className="calendar-day">
-          <h4>{new Date(day.day).toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'short' })}</h4>
-          <div className="calendar-times">
-            {day.times.map(time => (
-              <button key={time} className="time-slot" onClick={() => onTimeSelect(day.day, time)}>
-                {time}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+    <div className="calendar-wrapper">
+      <Calendar
+        onChange={onDateChange}
+        value={selectedDate}
+        tileDisabled={isTileDisabled}
+        locale="es-ES"
+      />
     </div>
   );
 }
