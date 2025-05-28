@@ -11,7 +11,6 @@ export default function BookingModal() {
   const toggleModal = () => setVisible(!visible);
 
   useEffect(() => {
-    // Carga todas las tiendas al abrir el modal
     if (visible && companies.length === 0) {
       fetch('/api/public-branches-services')
         .then(res => res.json())
@@ -20,21 +19,14 @@ export default function BookingModal() {
     }
   }, [visible]);
 
-  const handleCompanyChange = async (e) => {
+  const handleCompanyChange = (e) => {
     const companyId = e.target.value;
     setSelectedCompanyId(companyId);
 
     const selectedCompany = companies.find(c => c.id === companyId);
     if (selectedCompany) {
       setFieldIds(selectedCompany.customerFields);
-    }
-
-    try {
-      const res = await fetch(`/api/public-availability?company_id=${companyId}`);
-      const data = await res.json();
-      setServices(data.services || []);
-    } catch (err) {
-      console.error('Error cargando servicios:', err);
+      setServices(selectedCompany.services || []); // 🔥 Aquí cargamos los servicios disponibles
     }
   };
 
@@ -60,7 +52,7 @@ export default function BookingModal() {
               ))}
             </select>
 
-            {/* Mostrar ID de la tienda */}
+            {/* Mostrar ID de la tienda y los campos de cliente */}
             {selectedCompanyId && (
               <>
                 <p><strong>Company ID:</strong> {selectedCompanyId}</p>
@@ -76,11 +68,12 @@ export default function BookingModal() {
               </>
             )}
 
-            {/* Selector de servicios */}
+            {/* Selector de servicios si hay alguno */}
             {services.length > 0 && (
               <>
                 <h4>Selecciona un servicio:</h4>
                 <select>
+                  <option value="" disabled>Selecciona un servicio</option>
                   {services.map(service => (
                     <option key={service.id} value={service.id}>
                       {service.name}
