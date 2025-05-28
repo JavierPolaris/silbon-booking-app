@@ -16,50 +16,41 @@ export default function BookingModal() {
     if (visible && companies.length === 0) {
       fetch('/api/public-branches-services')
         .then(res => res.json())
-        .then(data => setCompanies(data))
+        .then(setCompanies)
         .catch(err => console.error('Error cargando sucursales:', err));
     }
   }, [visible]);
 
-  const handleCompanyChange = async (e) => {
+  const handleCompanyChange = (e) => {
     const companyId = e.target.value;
     const company = companies.find(c => c.id === companyId);
     setSelectedCompany(company);
-    setFieldIds(company.customerFields);
-
-    try {
-      const res = await fetch(`/api/public-availability?companyId=${companyId}&serviceId=`);
-      const data = await res.json();
-      setServices(data.services || []);
-    } catch (err) {
-      console.error('Error cargando servicios:', err);
-    }
+    setFieldIds(company?.customerFields || []);
+    setSelectedService(null);
+    setAvailability([]);
+    setServices(company?.services || []);
   };
 
-  const handleServiceChange = async (e) => {
-    const serviceId = e.target.value;
-    const selected = services.find(s => s.id === serviceId);
-    setSelectedService(selected);
-
-    try {
-      const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
-      const data = await res.json();
-      setAvailability(data || []);
-    } catch (err) {
-      console.error('Error obteniendo disponibilidad:', err);
-    }
-  };
-
-  const resetCompany = () => {
+  const handleBackToCompanies = () => {
     setSelectedCompany(null);
+    setFieldIds([]);
     setServices([]);
     setSelectedService(null);
     setAvailability([]);
   };
 
-  const resetService = () => {
-    setSelectedService(null);
-    setAvailability([]);
+  const handleServiceChange = async (e) => {
+    const serviceId = e.target.value;
+    const service = services.find(s => s.id === serviceId);
+    setSelectedService(service);
+
+    try {
+      const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
+      const data = await res.json();
+      setAvailability(data);
+    } catch (err) {
+      console.error('Error cargando disponibilidad:', err);
+    }
   };
 
   return (
@@ -85,38 +76,34 @@ export default function BookingModal() {
               </>
             ) : (
               <>
-                <button className="back-button" onClick={resetCompany}>←</button>
-                <h3>{selectedCompany.name}</h3>
-              </>
-            )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+                  <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                  <h3>{selectedCompany.name}</h3>
+                </div>
 
-            {selectedCompany && !selectedService && services.length > 0 && (
-              <>
-                <h4>Selecciona un servicio:</h4>
-                <select onChange={handleServiceChange} defaultValue="">
-                  <option value="" disabled>Selecciona un servicio</option>
-                  {services.map(service => (
-                    <option key={service.id} value={service.id}>
-                      {service.name}
-                    </option>
-                  ))}
-                </select>
-              </>
-            )}
-
-            {selectedService && (
-              <>
-                <button className="back-button" onClick={resetService}>←</button>
-                <h3>{selectedService.name}</h3>
-
-                <h4>Fechas y horas disponibles:</h4>
-                <ul>
-                  {availability.map((day, index) => (
-                    <li key={index}>
-                      <strong>{day.day}</strong>: {day.times.join(', ')}
-                    </li>
-                  ))}
-                </ul>
+                {!selectedService ? (
+                  <>
+                    <h4 style={{ marginTop: '1rem' }}>Selecciona un servicio:</h4>
+                    <select onChange={handleServiceChange} defaultValue="">
+                      <option value="" disabled>Selecciona un servicio</option>
+                      {services.map(service => (
+                        <option key={service.id} value={service.id}>{service.name}</option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <>
+                    <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
+                    {/* Aquí vendrá la disponibilidad con fechas y horas */}
+                    <ul>
+                      {availability.map(day => (
+                        <li key={day.day}>
+                          <strong>{day.day}</strong>: {day.times.join(', ')}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </>
             )}
           </div>
