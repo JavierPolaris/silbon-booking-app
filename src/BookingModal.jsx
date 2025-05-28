@@ -30,8 +30,8 @@ export default function BookingModal() {
     setFieldIds(company?.customerFields || []);
     setSelectedService(null);
     setAvailability([]);
-    setServices(company?.services || []);
     setSelectedDay(null);
+    setServices(company?.services || []);
   };
 
   const handleBackToCompanies = () => {
@@ -52,10 +52,14 @@ export default function BookingModal() {
       const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
       const data = await res.json();
       setAvailability(data);
-      setSelectedDay(data[0]?.day || null);
+      setSelectedDay(data.length > 0 ? data[0].day : null);
     } catch (err) {
       console.error('Error cargando disponibilidad:', err);
     }
+  };
+
+  const handleTimeSelect = (day, time) => {
+    console.log('Hora seleccionada:', day, time);
   };
 
   return (
@@ -100,27 +104,27 @@ export default function BookingModal() {
                   <>
                     <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
 
+                    <BookingCalendar
+                      availability={availability.filter(a => a.day === selectedDay)}
+                      onTimeSelect={handleTimeSelect}
+                    />
+
                     <div style={{ marginTop: '1rem' }}>
-                      <label>Selecciona una fecha:</label>
-                      <select onChange={(e) => setSelectedDay(e.target.value)} value={selectedDay}>
+                      <label><strong>Selecciona una fecha:</strong></label>
+                      <select
+                        value={selectedDay || ''}
+                        onChange={e => setSelectedDay(e.target.value)}
+                      >
                         {availability.map(day => (
                           <option key={day.day} value={day.day}>
-                            {new Date(day.day).toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' })}
+                            {new Date(day.day).toLocaleDateString('es-ES', {
+                              weekday: 'long',
+                              day: '2-digit',
+                              month: 'long'
+                            })}
                           </option>
                         ))}
                       </select>
-                    </div>
-
-                    <div style={{ marginTop: '1rem' }}>
-                      {availability
-                        .filter(day => day.day === selectedDay)
-                        .map(day => (
-                          <div key={day.day} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1rem' }}>
-                            {day.times.map(time => (
-                              <button key={time} className="slot-button">{time}</button>
-                            ))}
-                          </div>
-                        ))}
                     </div>
                   </>
                 )}
