@@ -87,7 +87,13 @@ export default function BookingModal() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedCompany || !selectedService || !selectedDate || !selectedTime) return;
-
+        console.log('📋 Datos a enviar:', {
+            companyId: selectedCompany.id,
+            serviceId: selectedService.id,
+            resourceIds: selectedService.resource_ids,
+            date: new Date(selectedDate).toISOString().split('T')[0],
+            time: selectedTime
+        });
         try {
             // Paso 1: reservar slot
             const slotRes = await fetch('/api/book-slot', {
