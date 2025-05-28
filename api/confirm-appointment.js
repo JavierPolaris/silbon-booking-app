@@ -1,5 +1,11 @@
-import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
+import axios from 'axios';
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,7 +22,7 @@ export default async function handler(req, res) {
   } = req.body;
 
   if (!reservationId || !secret || !firstName || !lastName || !email || !phoneNumber) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
   try {
@@ -27,38 +33,42 @@ export default async function handler(req, res) {
       secret: secret,
       fields: [
         {
-          id: '6655e370650cbf001ef2aabf', // 🧑 Nombre
+          id: '67ea6b6d7ea2f9dc58cf9c01', // firstName
           value: firstName
         },
         {
-          id: '6655e38a650cbf001ef2aac1', // 👨 Apellidos
+          id: '67ea6b6d7ea2f9dc58cf9c04', // lastName
           value: lastName
         },
         {
-          id: '6655e3b3650cbf001ef2aac8', // 📧 Email
-          value: email
-        },
-        {
-          id: '6655e39d650cbf001ef2aac4', // 📱 Teléfono (JSON.stringify!)
+          id: '67ea6b6d7ea2f9dc58cf9c02', // phone
           value: JSON.stringify({
             number: phoneNumber,
             country: 'ES'
           })
+        },
+        {
+          id: '67ea6b6d7ea2f9dc58cf9bff', // email
+          value: email
         }
       ]
     };
 
-    const response = await axios.post('https://api.timify.com/v1/booker-services/appointments/confirm', payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response = await axios.post(
+      'https://api.timify.com/v1/booker-services/appointments/confirm',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
 
-    console.log('✅ Cita confirmada:', response.data);
-    return res.status(200).json({ message: 'Cita confirmada correctamente', data: response.data });
+    return res.status(200).json({ message: 'Cita confirmada', data: response.data });
+
   } catch (error) {
-    console.error('❌ Error al confirmar cita:', error.response?.data || error.message);
-    return res.status(500).json({ error: 'Error al confirmar la cita', details: error.response?.data });
+    console.error('Error al confirmar cita:', error.response?.data || error.message);
+    return res.status(500).json({ error: 'Error al confirmar cita', details: error.response?.data });
   }
 }
