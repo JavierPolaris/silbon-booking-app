@@ -14,23 +14,37 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    if (!token) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
+
+    const days = [];
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      days.push(date.toISOString().split('T')[0]); // 'YYYY-MM-DD'
+    }
 
     console.log('🪪 Token:', token);
     console.log('🏢 companyId:', companyId);
     console.log('🧵 serviceId:', serviceId);
+    console.log('📅 days[]:', days);
 
-    const { data } = await axios.get('https://api.timify.com/v1/booker-services/availability', {
+    const { data } = await axios.get('https://api.timify.com/v1/booker-services/availabilities', {
       headers: {
-        Authorization: `Bearer ${token}`, // ✅ corregido aquí
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
       },
       params: {
         company_id: companyId,
         service_id: serviceId,
-      },
+        days
+      }
     });
 
-    console.log('📦 Disponibilidad recibida:', JSON.stringify(data, null, 2));
-
+    console.log('📦 Disponibilidad recibida:', data);
     res.status(200).json(data);
   } catch (err) {
     console.error('❌ Error al obtener disponibilidad:', err.response?.data || err.message);
