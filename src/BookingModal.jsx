@@ -57,6 +57,7 @@ export default function BookingModal() {
         const serviceId = e.target.value;
         const service = services.find(s => s.id === serviceId);
         setSelectedService(service);
+        console.log('🧪 Servicio seleccionado:', service);
 
         try {
             const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
