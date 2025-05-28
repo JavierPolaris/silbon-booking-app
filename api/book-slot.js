@@ -1,4 +1,4 @@
-// /api/book-slot.js
+// ✅ 1. RESERVAR EL SLOT (book-slot.js)
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
@@ -7,44 +7,33 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const {
-    companyId,
-    serviceId,
-    resourceId,
-    date, // Formato: "2025-05-30"
-    time // Formato: "12:40"
-  } = req.body;
+  const { companyId, serviceId, resourceIds, date, time } = req.body;
 
-  if (!companyId || !serviceId || !resourceId || !date || !time) {
+  if (!companyId || !serviceId || !resourceIds?.length || !date || !time) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
 
   try {
     const token = await getTimifyToken();
-    if (!token) return res.status(401).json({ error: 'Token inválido' });
 
     const payload = {
       company_id: companyId,
-      id_de_servicio: serviceId,
-      fecha: date,
-      tiempo: time,
-      identificadores_de_recursos: [resourceId]
+      service_id: serviceId,
+      resource_ids: resourceIds,
+      date,
+      time
     };
 
-    const { data } = await axios.post(
-      'https://api.timify.com/v1/booker-services/disponibilidades',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+    const response = await axios.post('https://api.timify.com/v1/booker-services/appointments', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-    );
+    });
 
-    res.status(200).json({ message: 'Slot reservado correctamente', data });
-  } catch (err) {
-    console.error('❌ Error al reservar slot:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error al reservar slot', details: err.response?.data || err.message });
+    return res.status(200).json({ message: 'Slot reservado', data: response.data });
+  } catch (error) {
+    console.error('Error al reservar slot:', error.response?.data || error.message);
+    return res.status(500).json({ error: 'Error al reservar el slot', details: error.response?.data });
   }
 }
