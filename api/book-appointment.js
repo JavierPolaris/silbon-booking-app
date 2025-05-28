@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  console.log('📥 Body recibido:', req.body); // debug útil
+  console.log('📥 Body recibido:', req.body);
 
   const {
     firstName,
@@ -17,8 +17,8 @@ export default async function handler(req, res) {
     note,
     serviceId,
     companyId,
-    resourceId, // importante para reservar
-    startTime // ISO format: "2025-05-29T12:40:00Z"
+    resourceId,
+    startTime
   } = req.body;
 
   if (!firstName || !lastName || !email || !phone || !serviceId || !companyId || !startTime || !resourceId) {
@@ -30,9 +30,9 @@ export default async function handler(req, res) {
     if (!token) return res.status(401).json({ error: 'Token inválido' });
 
     const payload = {
-      serviceId,
-      companyId,
-      resourceIds: [resourceId],
+      service_id: serviceId,
+      company_id: companyId,
+      resource_ids: [resourceId],
       customer: {
         firstName,
         lastName,
