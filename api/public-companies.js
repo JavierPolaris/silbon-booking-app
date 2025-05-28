@@ -1,3 +1,4 @@
+// /api/public-companies.js
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
@@ -13,11 +14,11 @@ export default async function handler(req, res) {
     const response = await axios.get('https://api.timify.com/v1/companies', {
       headers: {
         accept: 'application/json',
-        authorization: token,
+        authorization: token
       },
       params: {
-        enterprise_id: enterpriseId,
-      },
+        enterprise_id: enterpriseId
+      }
     });
 
     const companies = response.data?.data?.map(c => ({
@@ -28,7 +29,7 @@ export default async function handler(req, res) {
       city: c.address?.city || '',
       address: c.address?.formatted || '',
       isOnline: c.onlineStatus?.isOnline,
-      timezone: c.timezone,
+      timezone: c.timezone
     })) || [];
 
     res.status(200).json(companies);
