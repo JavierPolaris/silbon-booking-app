@@ -38,8 +38,8 @@ router.get('/availability', async (req, res) => {
         const token = await getTimifyToken();
         if (!token) return res.status(500).json({ error: 'Token error' });
 
-        const companyId = 'TU_COMPANY_ID';
-        const serviceId = 'TU_SERVICE_ID';
+        const companyId = '67ea6b6d7ea2f9dc58cf9bef';
+        const serviceId = '67eabf4d7ea2f9dc58cf9f0b';
 
         const response = await axios.get(
             `https://api.timify.com/v1/events/availability`,
