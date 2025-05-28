@@ -3,145 +3,205 @@ import './BookingModal.css';
 import BookingCalendar from './BookingCalendar';
 
 export default function BookingModal() {
-    const [visible, setVisible] = useState(false);
-    const [companies, setCompanies] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState(null);
-    const [fieldIds, setFieldIds] = useState([]);
-    const [services, setServices] = useState([]);
-    const [selectedService, setSelectedService] = useState(null);
-    const [availability, setAvailability] = useState([]);
-    const [selectedDay, setSelectedDay] = useState(null);
-    const [selectedTime, setSelectedTime] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [fieldIds, setFieldIds] = useState([]);
+  const [services, setServices] = useState([]);
+  const [selectedService, setSelectedService] = useState(null);
+  const [availability, setAvailability] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: ''
+  });
 
+  const toggleModal = () => setVisible(!visible);
 
-    const [selectedDate, setSelectedDate] = useState(null);
+  useEffect(() => {
+    if (visible && companies.length === 0) {
+      fetch('/api/public-branches-services')
+        .then(res => res.json())
+        .then(setCompanies)
+        .catch(err => console.error('Error cargando sucursales:', err));
+    }
+  }, [visible]);
 
-    const toggleModal = () => setVisible(!visible);
+  const handleCompanyChange = (e) => {
+    const companyId = e.target.value;
+    const company = companies.find(c => c.id === companyId);
+    setSelectedCompany(company);
+    setFieldIds(company?.customerFields || []);
+    setSelectedService(null);
+    setAvailability([]);
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setServices(company?.services || []);
+  };
 
-    useEffect(() => {
-        if (visible && companies.length === 0) {
-            fetch('/api/public-branches-services')
-                .then(res => res.json())
-                .then(setCompanies)
-                .catch(err => console.error('Error cargando sucursales:', err));
-        }
-    }, [visible]);
+  const handleBackToCompanies = () => {
+    setSelectedCompany(null);
+    setFieldIds([]);
+    setServices([]);
+    setSelectedService(null);
+    setAvailability([]);
+    setSelectedDate(null);
+    setSelectedTime(null);
+  };
 
-    const handleCompanyChange = (e) => {
-        const companyId = e.target.value;
-        const company = companies.find(c => c.id === companyId);
-        setSelectedCompany(company);
-        setFieldIds(company?.customerFields || []);
-        setSelectedService(null);
-        setAvailability([]);
-        setSelectedDay(null);
-        setServices(company?.services || []);
-    };
+  const handleServiceChange = async (e) => {
+    const serviceId = e.target.value;
+    const service = services.find(s => s.id === serviceId);
+    setSelectedService(service);
 
-    const handleBackToCompanies = () => {
-        setSelectedCompany(null);
-        setFieldIds([]);
-        setServices([]);
-        setSelectedService(null);
-        setAvailability([]);
-        setSelectedDay(null);
-    };
+    try {
+      const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
+      const data = await res.json();
+      setAvailability(data);
+      setSelectedDate(data.length > 0 ? new Date(data[0].day) : null);
+    } catch (err) {
+      console.error('Error cargando disponibilidad:', err);
+    }
+  };
 
-    const handleServiceChange = async (e) => {
-        const serviceId = e.target.value;
-        const service = services.find(s => s.id === serviceId);
-        setSelectedService(service);
+  const handleTimeSelect = (day, time) => {
+    setSelectedDate(day);
+    setSelectedTime(time);
+    console.log('Hora seleccionada:', day, time);
+  };
 
-        try {
-            const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
-            const data = await res.json();
-            setAvailability(data);
-            setSelectedDay(data.length > 0 ? data[0].day : null);
-        } catch (err) {
-            console.error('Error cargando disponibilidad:', err);
-        }
-    };
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setSelectedTime(null);
+  };
 
-    const handleTimeSelect = (day, time) => {
-        setSelectedDate(day);
-        setSelectedTime(time);
-        console.log('Hora seleccionada:', day, time);
-    };
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
+  const handleInputChange = e => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-    return (
-        <>
-            <button className="booking-toggle-button" onClick={toggleModal}>
-                Reservar Cita en Tienda
-            </button>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedCompany || !selectedService || !selectedDate || !selectedTime) return;
 
-            {visible && (
-                <div className="booking-modal">
-                    <div className="booking-sidebar">
-                        <h2>Reserva tu cita</h2>
+    try {
+      // Paso 1: reservar slot
+      const slotRes = await fetch('/api/book-slot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyId: selectedCompany.id,
+          serviceId: selectedService.id,
+          startDate: new Date(
+            selectedDate.toDateString() + ' ' + selectedTime
+          ).toISOString()
+        })
+      });
 
-                        {!selectedCompany ? (
-                            <>
-                                <p>Selecciona tu tienda más cercana</p>
-                                <select onChange={handleCompanyChange} defaultValue="">
-                                    <option value="" disabled>Selecciona una tienda</option>
-                                    {companies.map(company => (
-                                        <option key={company.id} value={company.id}>{company.name}</option>
-                                    ))}
-                                </select>
-                            </>
-                        ) : (
-                            <>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
-                                    <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
-                                    <h3>{selectedCompany.name}</h3>
-                                </div>
+      const { data: slotData } = await slotRes.json();
 
-                                {!selectedService ? (
-                                    <>
-                                        <h4 style={{ marginTop: '1rem' }}>Selecciona un servicio:</h4>
-                                        <select onChange={handleServiceChange} defaultValue="">
-                                            <option value="" disabled>Selecciona un servicio</option>
-                                            {services.map(service => (
-                                                <option key={service.id} value={service.id}>{service.name}</option>
-                                            ))}
-                                        </select>
-                                    </>
-                                ) : (
-                                    <>
-                                        <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
+      // Paso 2: confirmar cita
+      await fetch('/api/confirm-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reservationId: slotData.id,
+          secret: slotData.secret,
+          companyId: selectedCompany.id,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          fieldIds
+        })
+      });
 
-                                        <BookingCalendar
-                                            availableDates={availability}
-                                            selectedDate={selectedDate}
-                                            onDateChange={handleDateChange}
-                                            onTimeSelect={handleTimeSelect}
-                                        />
-                                        {selectedDate && (
-                                            <div className="calendar-times">
-                                                {availability
-                                                    .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
-                                                    ?.times.map(time => (
-                                                        <button key={time} className="time-slot" onClick={() => handleTimeSelect(selectedDate, time)}>
-                                                            {time}
-                                                        </button>
-                                                    ))}
-                                            </div>
-                                        )}
+      alert('Cita confirmada con éxito');
+      setVisible(false);
+    } catch (err) {
+      console.error('Error al confirmar cita:', err);
+    }
+  };
 
+  return (
+    <>
+      <button className="booking-toggle-button" onClick={toggleModal}>
+        Reservar Cita en Tienda
+      </button>
 
+      {visible && (
+        <div className="booking-modal">
+          <div className="booking-sidebar">
+            <h2>Reserva tu cita</h2>
 
-                                    </>
-                                )}
-                            </>
-                        )}
-                    </div>
-
-                    <div className="booking-overlay" onClick={toggleModal}></div>
+            {!selectedCompany ? (
+              <>
+                <p>Selecciona tu tienda más cercana</p>
+                <select onChange={handleCompanyChange} defaultValue="">
+                  <option value="" disabled>Selecciona una tienda</option>
+                  {companies.map(company => (
+                    <option key={company.id} value={company.id}>{company.name}</option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+                  <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                  <h3>{selectedCompany.name}</h3>
                 </div>
+
+                {!selectedService ? (
+                  <>
+                    <h4 style={{ marginTop: '1rem' }}>Selecciona un servicio:</h4>
+                    <select onChange={handleServiceChange} defaultValue="">
+                      <option value="" disabled>Selecciona un servicio</option>
+                      {services.map(service => (
+                        <option key={service.id} value={service.id}>{service.name}</option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <>
+                    <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
+                    <BookingCalendar
+                      availableDates={availability}
+                      selectedDate={selectedDate}
+                      onDateChange={handleDateChange}
+                      onTimeSelect={handleTimeSelect}
+                    />
+                    {selectedDate && (
+                      <div className="calendar-times">
+                        {availability
+                          .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
+                          ?.times.map(time => (
+                            <button key={time} className={`time-slot ${time === selectedTime ? 'selected' : ''}`} onClick={() => handleTimeSelect(selectedDate, time)}>
+                              {time}
+                            </button>
+                          ))}
+                      </div>
+                    )}
+
+                    {selectedDate && selectedTime && (
+                      <form onSubmit={handleSubmit} className="booking-form">
+                        <h4>Introduce tus datos</h4>
+                        <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
+                        <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
+                        <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
+                        <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+                        <button type="submit">Confirmar cita</button>
+                      </form>
+                    )}
+                  </>
+                )}
+              </>
             )}
-        </>
-    );
+          </div>
+          <div className="booking-overlay" onClick={toggleModal}></div>
+        </div>
+      )}
+    </>
+  );
 }
