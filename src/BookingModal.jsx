@@ -68,11 +68,38 @@ export default function BookingModal() {
         }
     };
 
-    const handleTimeSelect = (day, time) => {
+    const handleTimeSelect = async (day, time) => {
         setSelectedDate(day);
         setSelectedTime(time);
         console.log('Hora seleccionada:', day, time);
+
+        try {
+            const slotRes = await fetch('/api/book-slot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    companyId: selectedCompany.id,
+                    serviceId: selectedService.id,
+                    resourceIds: selectedService.resource_ids, // 👈 asegúrate que esto exista
+                    date: new Date(day).toISOString().split('T')[0], // formato YYYY-MM-DD
+                    time
+                })
+            });
+
+            const result = await slotRes.json();
+            console.log('📦 Respuesta de book-slot:', result);
+
+            if (!slotRes.ok || !result.data) {
+                throw new Error(result.error || 'No se pudo reservar el slot');
+            }
+
+            const slotData = result.data;
+            // continuar con confirmación
+        } catch (err) {
+            console.error('Error al confirmar cita:', err);
+        }
     };
+    
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
