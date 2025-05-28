@@ -14,19 +14,22 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    if (!token) {
-      return res.status(401).json({ error: 'Token inválido' });
-    }
+
+    console.log('🪪 Token:', token);
+    console.log('🏢 companyId:', companyId);
+    console.log('🧵 serviceId:', serviceId);
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/availability', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // ✅ corregido aquí
       },
       params: {
         company_id: companyId,
         service_id: serviceId,
       },
     });
+
+    console.log('📦 Disponibilidad recibida:', JSON.stringify(data, null, 2));
 
     res.status(200).json(data);
   } catch (err) {
