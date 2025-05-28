@@ -7,18 +7,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
+  console.log('📥 Body recibido:', req.body); // debug útil
+
   const {
     firstName,
     lastName,
     email,
-    phoneNumber,
+    phone,
     note,
     serviceId,
     companyId,
-    startTime // ISO format: "2025-05-29T12:40:00+02:00"
+    resourceId, // importante para reservar
+    startTime // ISO format: "2025-05-29T12:40:00Z"
   } = req.body;
 
-  if (!firstName || !lastName || !email || !phoneNumber || !serviceId || !companyId || !startTime) {
+  if (!firstName || !lastName || !email || !phone || !serviceId || !companyId || !startTime || !resourceId) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
 
@@ -29,11 +32,12 @@ export default async function handler(req, res) {
     const payload = {
       serviceId,
       companyId,
+      resourceIds: [resourceId],
       customer: {
         firstName,
         lastName,
         email,
-        phoneNumber,
+        phone,
         language: 'es'
       },
       startTime,
@@ -54,6 +58,6 @@ export default async function handler(req, res) {
     res.status(200).json({ message: 'Reserva creada correctamente', data });
   } catch (err) {
     console.error('❌ Error al crear la reserva:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error al crear la reserva' });
+    res.status(500).json({ error: 'Error al crear la reserva', details: err.response?.data || err.message });
   }
 }
