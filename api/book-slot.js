@@ -1,4 +1,4 @@
-// ✅ book-slot.js CORREGIDO
+// ✅ book-slot.js 
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
