@@ -1,24 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './BookingModal.css';
 
 export default function BookingModal() {
   const [visible, setVisible] = useState(false);
-  const [branches, setBranches] = useState([]);
-  const [selectedBranch, setSelectedBranch] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/public-branches-services')
-      .then(res => res.json())
-      .then(data => setBranches(data))
-      .catch(err => console.error('Error cargando sucursales:', err));
-  }, []);
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompanyId, setSelectedCompanyId] = useState('');
+  const [fieldIds, setFieldIds] = useState([]);
+  const [services, setServices] = useState([]);
 
   const toggleModal = () => setVisible(!visible);
 
-  const handleBranchSelect = (e) => {
-    const selectedId = e.target.value;
-    const branch = branches.find(b => b.id === selectedId);
-    setSelectedBranch(branch);
+  useEffect(() => {
+    // Carga todas las tiendas al abrir el modal
+    if (visible && companies.length === 0) {
+      fetch('/api/public-branches-services')
+        .then(res => res.json())
+        .then(data => setCompanies(data))
+        .catch(err => console.error('Error cargando sucursales:', err));
+    }
+  }, [visible]);
+
+  const handleCompanyChange = async (e) => {
+    const companyId = e.target.value;
+    setSelectedCompanyId(companyId);
+
+    const selectedCompany = companies.find(c => c.id === companyId);
+    if (selectedCompany) {
+      setFieldIds(selectedCompany.customerFields);
+    }
+
+    try {
+      const res = await fetch(`/api/public-availability?company_id=${companyId}`);
+      const data = await res.json();
+      setServices(data.services || []);
+    } catch (err) {
+      console.error('Error cargando servicios:', err);
+    }
   };
 
   return (
@@ -33,27 +50,44 @@ export default function BookingModal() {
             <h2>Reserva tu cita</h2>
             <p>Selecciona tu tienda más cercana</p>
 
-            <select onChange={handleBranchSelect}>
-              <option value="">-- Selecciona una tienda --</option>
-              {branches.map(branch => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
+            {/* Select de tiendas */}
+            <select onChange={handleCompanyChange} defaultValue="">
+              <option value="" disabled>Selecciona una tienda</option>
+              {companies.map(company => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
                 </option>
               ))}
             </select>
 
-            {selectedBranch && (
-              <div style={{ marginTop: '1rem' }}>
-                <p><strong>Company ID:</strong> {selectedBranch.id}</p>
-                <p><strong>Field IDs:</strong></p>
+            {/* Mostrar ID de la tienda */}
+            {selectedCompanyId && (
+              <>
+                <p><strong>Company ID:</strong> {selectedCompanyId}</p>
+
+                <h4>Field IDs:</h4>
                 <ul>
-                  {selectedBranch.customerFields.map(field => (
+                  {fieldIds.map(field => (
                     <li key={field.id}>
-                      {field.type} → {field.translationKey} → {field.id}
+                      <strong>{field.type}</strong> → {field.translationKey} → {field.id}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </>
+            )}
+
+            {/* Selector de servicios */}
+            {services.length > 0 && (
+              <>
+                <h4>Selecciona un servicio:</h4>
+                <select>
+                  {services.map(service => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </>
             )}
           </div>
 
