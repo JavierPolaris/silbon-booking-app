@@ -14,28 +14,19 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    if (!token) {
-      return res.status(401).json({ error: 'Token inválido' });
-    }
+    if (!token) return res.status(401).json({ error: 'Token inválido' });
 
     const days = [];
     const today = new Date();
-
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      days.push(date.toISOString().split('T')[0]); // 'YYYY-MM-DD'
+      const day = new Date(today);
+      day.setDate(today.getDate() + i);
+      days.push(day.toISOString().split('T')[0]);
     }
-
-    console.log('🪪 Token:', token);
-    console.log('🏢 companyId:', companyId);
-    console.log('🧵 serviceId:', serviceId);
-    console.log('📅 days[]:', days);
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/availabilities', {
       headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
+        Authorization: `Bearer ${token}`
       },
       params: {
         company_id: companyId,
@@ -44,8 +35,13 @@ export default async function handler(req, res) {
       }
     });
 
-    console.log('📦 Disponibilidad recibida:', data);
-    res.status(200).json(data);
+    const simplified = data.data?.slots?.map(slot => ({
+      day: slot.day,
+      times: slot.times
+    })) || [];
+
+    res.status(200).json(simplified);
+
   } catch (err) {
     console.error('❌ Error al obtener disponibilidad:', err.response?.data || err.message);
     res.status(500).json({ error: 'Error interno del servidor' });
