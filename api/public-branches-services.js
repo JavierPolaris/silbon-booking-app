@@ -8,12 +8,18 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    console.log("🪪 Token obtenido:", token);
+
+    if (!token) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
+
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+    console.log("🏢 enterpriseId:", enterpriseId);
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
         Authorization: `Bearer ${token}`,
-
       },
       params: {
         enterprise_id: enterpriseId,
@@ -21,9 +27,11 @@ export default async function handler(req, res) {
       },
     });
 
-    res.status(200).json(data.companies);
+    console.log("📦 Respuesta de Timify:", data);
+
+    res.status(200).json(data.companies || []);
   } catch (err) {
-    console.error('Error al obtener sucursales:', err.message);
+    console.error('❌ Error al obtener sucursales:', err.response?.data || err.message);
     res.status(500).json({ error: 'Error interno' });
   }
 }
