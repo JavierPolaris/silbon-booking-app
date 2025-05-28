@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './BookingModal.css';
+import BookingCalendar from './BookingCalendar';
 
 export default function BookingModal() {
   const [visible, setVisible] = useState(false);
@@ -9,6 +10,7 @@ export default function BookingModal() {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [availability, setAvailability] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const toggleModal = () => setVisible(!visible);
 
@@ -29,6 +31,7 @@ export default function BookingModal() {
     setSelectedService(null);
     setAvailability([]);
     setServices(company?.services || []);
+    setSelectedSlot(null);
   };
 
   const handleBackToCompanies = () => {
@@ -37,12 +40,14 @@ export default function BookingModal() {
     setServices([]);
     setSelectedService(null);
     setAvailability([]);
+    setSelectedSlot(null);
   };
 
   const handleServiceChange = async (e) => {
     const serviceId = e.target.value;
     const service = services.find(s => s.id === serviceId);
     setSelectedService(service);
+    setSelectedSlot(null);
 
     try {
       const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
@@ -51,6 +56,11 @@ export default function BookingModal() {
     } catch (err) {
       console.error('Error cargando disponibilidad:', err);
     }
+  };
+
+  const handleTimeSelect = (day, time) => {
+    setSelectedSlot({ day, time });
+    console.log('📆 Cita seleccionada:', day, time);
   };
 
   return (
@@ -94,14 +104,13 @@ export default function BookingModal() {
                 ) : (
                   <>
                     <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
-                    {/* Aquí vendrá la disponibilidad con fechas y horas */}
-                    <ul>
-                      {availability.map(day => (
-                        <li key={day.day}>
-                          <strong>{day.day}</strong>: {day.times.join(', ')}
-                        </li>
-                      ))}
-                    </ul>
+                    <BookingCalendar availability={availability} onTimeSelect={handleTimeSelect} />
+
+                    {selectedSlot && (
+                      <p style={{ marginTop: '1rem' }}>
+                        Cita seleccionada: <strong>{selectedSlot.day}</strong> a las <strong>{selectedSlot.time}</strong>
+                      </p>
+                    )}
                   </>
                 )}
               </>
