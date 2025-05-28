@@ -10,7 +10,7 @@ export default function BookingModal() {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [availability, setAvailability] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const toggleModal = () => setVisible(!visible);
 
@@ -31,7 +31,7 @@ export default function BookingModal() {
     setSelectedService(null);
     setAvailability([]);
     setServices(company?.services || []);
-    setSelectedSlot(null);
+    setSelectedDay(null);
   };
 
   const handleBackToCompanies = () => {
@@ -40,27 +40,22 @@ export default function BookingModal() {
     setServices([]);
     setSelectedService(null);
     setAvailability([]);
-    setSelectedSlot(null);
+    setSelectedDay(null);
   };
 
   const handleServiceChange = async (e) => {
     const serviceId = e.target.value;
     const service = services.find(s => s.id === serviceId);
     setSelectedService(service);
-    setSelectedSlot(null);
 
     try {
       const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
       const data = await res.json();
       setAvailability(data);
+      setSelectedDay(data[0]?.day || null);
     } catch (err) {
       console.error('Error cargando disponibilidad:', err);
     }
-  };
-
-  const handleTimeSelect = (day, time) => {
-    setSelectedSlot({ day, time });
-    console.log('📆 Cita seleccionada:', day, time);
   };
 
   return (
@@ -104,13 +99,29 @@ export default function BookingModal() {
                 ) : (
                   <>
                     <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
-                    <BookingCalendar availability={availability} onTimeSelect={handleTimeSelect} />
 
-                    {selectedSlot && (
-                      <p style={{ marginTop: '1rem' }}>
-                        Cita seleccionada: <strong>{selectedSlot.day}</strong> a las <strong>{selectedSlot.time}</strong>
-                      </p>
-                    )}
+                    <div style={{ marginTop: '1rem' }}>
+                      <label>Selecciona una fecha:</label>
+                      <select onChange={(e) => setSelectedDay(e.target.value)} value={selectedDay}>
+                        {availability.map(day => (
+                          <option key={day.day} value={day.day}>
+                            {new Date(day.day).toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long' })}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ marginTop: '1rem' }}>
+                      {availability
+                        .filter(day => day.day === selectedDay)
+                        .map(day => (
+                          <div key={day.day} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1rem' }}>
+                            {day.times.map(time => (
+                              <button key={time} className="slot-button">{time}</button>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
                   </>
                 )}
               </>
