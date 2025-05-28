@@ -126,23 +126,7 @@ export default function BookingModal() {
                                             </div>
                                         )}
 
-                                        <div style={{ marginTop: '1rem' }}>
-                                            <label><strong>Selecciona una fecha:</strong></label>
-                                            <select
-                                                value={selectedDay || ''}
-                                                onChange={e => setSelectedDay(e.target.value)}
-                                            >
-                                                {availability.map(day => (
-                                                    <option key={day.day} value={day.day}>
-                                                        {new Date(day.day).toLocaleDateString('es-ES', {
-                                                            weekday: 'long',
-                                                            day: '2-digit',
-                                                            month: 'long'
-                                                        })}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                       
                                     </>
                                 )}
                             </>
