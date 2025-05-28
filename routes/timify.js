@@ -79,165 +79,33 @@ router.get('/companies', async (req, res) => {
 });
 
 
-// RUTA: Disponibilidad pública desde booker-services
+// 1) Sucursales + servicios
+router.get('/public-branches-services', async (req, res) => {
+  const token = await getTimifyToken();
+  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+  const { data } = await axios.get(
+    'https://api.timify.com/v1/booker-services/companies',
+    {
+      headers: { Authorization: `Bearer ${token.accessToken}` },
+      params: { enterprise_id: enterpriseId, with_full_attributes: false }
+    }
+  );
+  res.json(data.companies);
+});
+
+// 2) Disponibilidad pública
 router.get('/public-availability', async (req, res) => {
   const { companyId, serviceId } = req.query;
   const token = await getTimifyToken();
-
-  if (!token || !token.accessToken) {
-    return res.status(500).json({ error: 'Token error' });
-  }
-
-  try {
-    const response = await axios.get(
-      `https://api.timify.com/v1/booker-services/availabilities`,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token.accessToken}`
-        },
-        params: {
-          company_id: companyId,
-          service_id: serviceId
-        }
-      }
-    );
-
-    res.json(response.data);
-  } catch (error) {
-    console.error('❌ Error al consultar disponibilidad pública:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error al consultar disponibilidad pública' });
-  }
-});
-
-// RUTA: Servicios públicos por tienda desde booker-services
-router.get('/public-services', async (req, res) => {
-  try {
-    const token = await getTimifyToken();
-
-    if (!token || !token.accessToken) {
-      console.log("⚠️ No hay token disponible");
-      return res.status(500).json({ error: 'Token error' });
+  const { data } = await axios.get(
+    'https://api.timify.com/v1/booker-services/availabilities',
+    {
+      headers: { Authorization: `Bearer ${token.accessToken}` },
+      params: { company_id: companyId, service_id: serviceId }
     }
-
-    const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-
-    const response = await axios.get(
-      `https://api.timify.com/v1/booker-services/enterprise`,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token.accessToken}`
-        },
-        params: {
-          enterprise_id: enterpriseId
-        }
-      }
-    );
-
-    return res.json(response.data);
-
-  } catch (err) {
-    console.error('❌ Error al obtener servicios públicos:', err.response?.data || err.message);
-    return res.status(500).json({ error: err.response?.data || err.message });
-  }
+  );
+  res.json(data);
 });
-
-
-
-
-// DISPONIBILIDAD
-router.get('/availability', async (req, res) => {
-    try {
-        const token = await getTimifyToken();
-        if (!token) return res.status(500).json({ error: 'Token error' });
-
-        const companyId = '67ea6b6d7ea2f9dc58cf9bef';
-        const serviceId = '67eabf4d7ea2f9dc58cf9f0b';
-
-        const response = await axios.get(
-            `https://api.timify.com/v1/events/availability`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                params: {
-                    companyId,
-                    serviceId
-                }
-            }
-        );
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('❌ Error en disponibilidad:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error al consultar disponibilidad' });
-    }
-});
-
-// SERVICIOS
-router.get('/services', async (req, res) => {
-    try {
-        const token = await getTimifyToken();
-        if (!token) return res.status(500).json({ error: 'Token error' });
-
-        const response = await axios.get(
-            `https://api.timify.com/v1/services`,
-            {
-                headers: {
-                    accept: 'application/json',
-                    authorization: token
-                },
-                params: {
-                    sort: 'name',
-                    sort_type: 'asc',
-                    with_full_attributes: false
-                }
-            }
-        );
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('❌ Error al obtener servicios:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error al obtener servicios' });
-    }
-});
-
-
-
-// SERVICIOS POR TIENDA
-router.get('/services/:companyId', async (req, res) => {
-  const { companyId } = req.params;
-  const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-
-  if (!enterpriseId) {
-    return res.status(400).json({ error: 'enterprise_id no proporcionado' });
-  }
-
-  try {
-    const token = await getTimifyToken();
-    if (!token || !token.accessToken) {
-      return res.status(500).json({ error: 'Token error' });
-    }
-
-    const apiRes = await axios.get(
-      `https://api.timify.com/api/booking/service?enterpriseId=${enterpriseId}&locationId=${companyId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.accessToken}`,
-        }
-      }
-    );
-
-    // Devolvemos directamente los servicios
-    return res.json({ services: apiRes.data.data });
-
-  } catch (err) {
-    console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
-    return res.status(500).json({ error: 'Error al obtener servicios' });
-  }
-});
-
 
 
 
