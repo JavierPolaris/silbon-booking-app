@@ -92,7 +92,9 @@ export default function BookingModal() {
             return;
         }
 
-        const resourceIds = selectedService?.resource_ids || selectedService?.resourceIds || [];
+        const resourceIds = selectedCompany?.resources?.map(r => r.id) || [];
+        console.log('Recursos disponibles:', resourceIds);
+
         if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
             alert('Este servicio no tiene recursos asignados. No se puede reservar.');
             return;
