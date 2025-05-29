@@ -100,7 +100,7 @@ export default function BookingModal() {
             return;
         }
 
-        const dayString = new Date(selectedDate).toISOString().split('T')[0];
+        const dayString = selectedDate.toLocaleDateString('sv-SE'); // Formato YYYY-MM-DD
 
         console.log('📤 Enviando reserva con los siguientes datos:');
         console.table({
