@@ -165,7 +165,7 @@ export default function BookingModal() {
                 })
             });
 
-            setConfirmationMessage('✅ ¡Tu cita ha sido confirmada! Te hemos enviado un correo con los detalles.');
+            setConfirmationMessage('¡Tu cita ha sido confirmada! Te hemos enviado un correo con los detalles.');
         } catch (error) {
             console.error('❌ Error al confirmar cita:', {
                 status: error.response?.status,
@@ -263,7 +263,7 @@ export default function BookingModal() {
                                             </circle>
                                         </svg>
                                     </div>
-                                ) : (
+                                ) : !selectedTime ? (
                                     <>
                                         <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
                                         <BookingCalendar
@@ -288,22 +288,36 @@ export default function BookingModal() {
                                                     ))}
                                             </div>
                                         )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="booking-summary">
+                                            <p><strong>Tienda:</strong> {selectedCompany.name}</p>
+                                            <p><strong>Servicio:</strong> {selectedService.name}</p>
+                                            <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
+                                            <p><strong>Hora:</strong> {selectedTime}</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedTime(null)}
+                                                style={{ marginBottom: '1rem' }}
+                                            >
+                                                ← Cambiar día u hora
+                                            </button>
+                                        </div>
 
-                                        {selectedDate && selectedTime && (
-                                            <form onSubmit={handleSubmit} className="booking-form">
-                                                <h4>Introduce tus datos</h4>
-                                                <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
-                                                <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
-                                                <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
-                                                <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
-                                                <textarea
-                                                    name="notes"
-                                                    placeholder="¿Quieres decirnos algo?"
-                                                    onChange={handleInputChange}
-                                                />
-                                                <button type="submit">Confirmar cita</button>
-                                            </form>
-                                        )}
+                                        <form onSubmit={handleSubmit} className="booking-form">
+                                            <h4>Introduce tus datos</h4>
+                                            <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
+                                            <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
+                                            <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
+                                            <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+                                            <textarea
+                                                name="notes"
+                                                placeholder="¿Quieres decirnos algo?"
+                                                onChange={handleInputChange}
+                                            />
+                                            <button type="submit">Confirmar cita</button>
+                                        </form>
                                     </>
                                 )}
                             </>
