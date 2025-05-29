@@ -292,14 +292,13 @@ export default function BookingModal() {
                                 ) : (
                                     <>
                                         <div className="booking-summary">
-                                            <p><strong>Tienda:</strong> {selectedCompany.name}</p>
                                             <p><strong>Servicio:</strong> {selectedService.name}</p>
                                             <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
                                             <p><strong>Hora:</strong> {selectedTime}</p>
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedTime(null)}
-                                                style={{ marginBottom: '1rem' }}
+                                                style={{ marginBottom: '1rem', background: 'none', border: 'none', fontSize: '1.5rem' }}
                                             >
                                                 ← Cambiar día u hora
                                             </button>
