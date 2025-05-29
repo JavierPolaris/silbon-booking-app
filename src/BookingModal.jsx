@@ -302,7 +302,7 @@ export default function BookingModal() {
     const [fieldIds, setFieldIds] = useState([]);
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
-    const [availability, setAvailability] = useState([]);
+    const [availability, setAvailability] = useState([]); 
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [formData, setFormData] = useState({
