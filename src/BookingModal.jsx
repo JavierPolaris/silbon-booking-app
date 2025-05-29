@@ -22,6 +22,8 @@ export default function BookingModal() {
     });
     const [loadingAvailability, setLoadingAvailability] = useState(false);
 
+    const formatDate = (date) =>
+        date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     const toggleModal = () => setVisible(!visible);
 
@@ -67,7 +69,7 @@ export default function BookingModal() {
         const serviceId = e.target.value;
         const service = services.find(s => s.id === serviceId);
         setSelectedService(service);
-        setLoadingAvailability(true); // empieza carga
+        setLoadingAvailability(true);
 
         try {
             const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
@@ -77,10 +79,9 @@ export default function BookingModal() {
         } catch (err) {
             console.error('Error cargando disponibilidad:', err);
         } finally {
-            setLoadingAvailability(false); // termina carga
+            setLoadingAvailability(false);
         }
     };
-
 
     const handleTimeSelect = (day, time) => {
         setSelectedTime(time);
@@ -114,15 +115,6 @@ export default function BookingModal() {
 
         const dayString = selectedDate.toLocaleDateString('sv-SE');
 
-        console.log('📤 Enviando reserva con los siguientes datos:');
-        console.table({
-            companyId: selectedCompany.id,
-            serviceId: selectedService.id,
-            resourceIds,
-            date: dayString,
-            time: selectedTime
-        });
-
         try {
             const slotRes = await fetch('/api/book-slot', {
                 method: 'POST',
@@ -137,24 +129,12 @@ export default function BookingModal() {
             });
 
             const result = await slotRes.json();
-            console.log('📦 Respuesta de book-slot:', result);
 
             if (!slotRes.ok || !result.data) {
                 throw new Error(result.error || 'No se pudo reservar el slot');
             }
 
             const slotData = result.data.data;
-
-            console.log('📦 Enviando confirmación con:', {
-                reservationId: slotData.id,
-                secret: slotData.secret,
-                companyId: selectedCompany.id,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                phoneNumber: formData.phoneNumber,
-                fieldIds
-            });
 
             await fetch('/api/confirm-appointment', {
                 method: 'POST',
@@ -174,11 +154,7 @@ export default function BookingModal() {
 
             setVisible(false);
         } catch (error) {
-            console.error('❌ Error al confirmar cita:', {
-                status: error.response?.status,
-                data: error.response?.data,
-                message: error.message
-            });
+            console.error('❌ Error al confirmar cita:', error);
         }
     };
 
@@ -245,69 +221,87 @@ export default function BookingModal() {
                                         </select>
                                     </>
                                 ) : loadingAvailability ? (
-                                <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-                                    <svg width="48" height="48" viewBox="0 0 100 100">
-                                        <circle
-                                            cx="50"
-                                            cy="50"
-                                            r="40"
-                                            stroke="#000"
-                                            strokeWidth="10"
-                                            fill="none"
-                                            strokeDasharray="188.5"
-                                            strokeDashoffset="188.5"
-                                        >
-                                            <animate
-                                                attributeName="stroke-dashoffset"
-                                                values="188.5;0"
-                                                dur="1s"
-                                                repeatCount="indefinite"
-                                            />
-                                        </circle>
-                                    </svg>
-                                </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                                        <svg width="48" height="48" viewBox="0 0 100 100">
+                                            <circle
+                                                cx="50"
+                                                cy="50"
+                                                r="40"
+                                                stroke="#000"
+                                                strokeWidth="10"
+                                                fill="none"
+                                                strokeDasharray="188.5"
+                                                strokeDashoffset="188.5"
+                                            >
+                                                <animate
+                                                    attributeName="stroke-dashoffset"
+                                                    values="188.5;0"
+                                                    dur="1s"
+                                                    repeatCount="indefinite"
+                                                />
+                                            </circle>
+                                        </svg>
+                                    </div>
                                 ) : (
-                                <>
-                                    <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
-                                    <BookingCalendar
-                                        availableDates={availability}
-                                        selectedDate={selectedDate}
-                                        onDateChange={handleDateChange}
-                                        onTimeSelect={handleTimeSelect}
-                                    />
+                                    <>
+                                        <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
+                                        {!selectedTime ? (
+                                            <>
+                                                <BookingCalendar
+                                                    availableDates={availability}
+                                                    selectedDate={selectedDate}
+                                                    onDateChange={handleDateChange}
+                                                    onTimeSelect={handleTimeSelect}
+                                                />
 
-                                    {selectedDate && (
-                                        <div className="calendar-times">
-                                            {availability
-                                                .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
-                                                ?.times.map(time => (
+                                                {selectedDate && (
+                                                    <div className="calendar-times">
+                                                        {availability
+                                                            .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
+                                                            ?.times.map(time => (
+                                                                <button
+                                                                    key={time}
+                                                                    className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
+                                                                    onClick={() => handleTimeSelect(selectedDate, time)}
+                                                                >
+                                                                    {time}
+                                                                </button>
+                                                            ))}
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="booking-summary">
+                                                    <p><strong>Tienda:</strong> {selectedCompany.name}</p>
+                                                    <p><strong>Servicio:</strong> {selectedService.name}</p>
+                                                    <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
+                                                    <p><strong>Hora:</strong> {selectedTime}</p>
                                                     <button
-                                                        key={time}
-                                                        className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
-                                                        onClick={() => handleTimeSelect(selectedDate, time)}
+                                                        type="button"
+                                                        onClick={() => setSelectedTime(null)}
+                                                        style={{ marginBottom: '1rem' }}
                                                     >
-                                                        {time}
+                                                        ← Cambiar día u hora
                                                     </button>
-                                                ))}
-                                        </div>
-                                    )}
+                                                </div>
 
-                                    {selectedDate && selectedTime && (
-                                        <form onSubmit={handleSubmit} className="booking-form">
-                                            <h4>Introduce tus datos</h4>
-                                            <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
-                                            <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
-                                            <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
-                                            <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
-                                            <textarea
-                                                name="notes"
-                                                placeholder="¿Quieres decirnos algo?"
-                                                onChange={handleInputChange}
-                                            />
-                                            <button type="submit">Confirmar cita</button>
-                                        </form>
-                                    )}
-                                </>
+                                                <form onSubmit={handleSubmit} className="booking-form">
+                                                    <h4>Introduce tus datos</h4>
+                                                    <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
+                                                    <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
+                                                    <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
+                                                    <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+                                                    <textarea
+                                                        name="notes"
+                                                        placeholder="¿Quieres decirnos algo?"
+                                                        onChange={handleInputChange}
+                                                    />
+                                                    <button type="submit">Confirmar cita</button>
+                                                </form>
+                                            </>
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}
