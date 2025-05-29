@@ -164,7 +164,11 @@ export default function BookingModal() {
 
             setVisible(false);
         } catch (err) {
-            console.error('❌ Error al confirmar cita:', err);
+            console.error('❌ Error al confirmar cita:', {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message
+            });
         }
     };
 
