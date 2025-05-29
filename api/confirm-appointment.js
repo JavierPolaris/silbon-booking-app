@@ -31,12 +31,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
-  if (
-    !fieldIds || !fieldIds.firstName || !fieldIds.lastName ||
-    !fieldIds.phone || !fieldIds.email
-  ) {
-    return res.status(400).json({ error: 'Faltan IDs de campos personalizados' });
+  const idByType = (type) => {
+    const match = fieldIds.find(f => f.type === type);
+    return match?.id || null;
+  };
+
+  const firstNameId = idByType('TEXT');
+  const lastNameId = idByType('TEXT');
+  const phoneId = idByType('PHONE');
+  const emailId = idByType('EMAIL');
+
+  if (!firstNameId || !lastNameId || !phoneId || !emailId) {
+    return res.status(400).json({ error: 'IDs de campos obligatorios no encontrados' });
   }
+
 
   try {
     const token = await getTimifyToken();
@@ -47,26 +55,27 @@ export default async function handler(req, res) {
       secret: secret,
       fields: [
         {
-          id: fieldIds.firstName,
+          id: firstNameId,
           value: firstName
         },
         {
-          id: fieldIds.lastName,
+          id: lastNameId,
           value: lastName
         },
         {
-          id: fieldIds.phone,
+          id: phoneId,
           value: JSON.stringify({
             number: phoneNumber,
             country: 'ES'
           })
         },
         {
-          id: fieldIds.email,
+          id: emailId,
           value: email
         }
       ]
     };
+
 
     const response = await axios.post(
       'https://api.timify.com/v1/booker-services/appointments/confirm',
