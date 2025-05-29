@@ -133,6 +133,17 @@ export default function BookingModal() {
 
             const slotData = result.data;
 
+            console.log('📦 Enviando confirmación con:', {
+                reservationId: slotData.id,
+                secret: slotData.secret,
+                companyId: selectedCompany.id,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+                fieldIds
+            });
+
             // Paso 2: confirmación
             await fetch('/api/confirm-appointment', {
                 method: 'POST',
@@ -150,7 +161,7 @@ export default function BookingModal() {
                 })
             });
 
-            alert('Cita confirmada con éxito');
+
             setVisible(false);
         } catch (err) {
             console.error('❌ Error al confirmar cita:', err);
