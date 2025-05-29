@@ -26,9 +26,7 @@ export default function BookingModal() {
     const formatDate = (date) =>
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    
-    const openModal = () => setVisible(true);
-    const closeModal = () => {
+    const toggleModal = () => {
         setVisible(!visible);
         setConfirmationMessage('');
         setSelectedCompany(null);
@@ -44,13 +42,6 @@ export default function BookingModal() {
             notes: ''
         });
     };
-    useEffect(() => {
-        const listener = (e) => {
-            if (e.data === 'openBookingModal') openModal();
-        };
-        window.addEventListener('message', listener);
-        return () => window.removeEventListener('message', listener);
-    }, []);
 
     useEffect(() => {
         if (visible && companies.length === 0) {
@@ -188,7 +179,10 @@ export default function BookingModal() {
 
     return (
         <>
-            
+            <button className="booking-toggle-button" onClick={toggleModal}>
+                Reservar Cita en Tienda
+            </button>
+
             {visible && (
                 <div className="booking-modal">
                     <div className="booking-sidebar">
@@ -330,7 +324,7 @@ export default function BookingModal() {
                             </>
                         )}
                     </div>
-                    <div className="booking-overlay" onClick={closeModal}></div>
+                    <div className="booking-overlay" onClick={toggleModal}></div>
                 </div>
             )}
         </>
