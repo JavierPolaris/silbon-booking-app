@@ -198,7 +198,7 @@ export default function BookingModal() {
                                                 cx="50"
                                                 cy="50"
                                                 r="40"
-                                                stroke="#ff9b00"
+                                                stroke="#000"
                                                 strokeWidth="10"
                                                 fill="none"
                                                 strokeDasharray="188.5"
