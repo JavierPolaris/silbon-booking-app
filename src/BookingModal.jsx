@@ -166,6 +166,8 @@ export default function BookingModal() {
             });
 
             setConfirmationMessage('¡Tu cita ha sido confirmada! Te hemos enviado un correo con los detalles.');
+            // 👇 Esto cierra el iframe si lo estás usando como modal embebido
+            window.parent.postMessage('bookingModalClose', '*');
         } catch (error) {
             console.error('❌ Error al confirmar cita:', {
                 status: error.response?.status,
