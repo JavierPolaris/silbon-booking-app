@@ -15,7 +15,9 @@ export default async function handler(req, res) {
   try {
     const token = await getTimifyToken();
     if (!token) return res.status(401).json({ error: 'Token inválido' });
+    
 
+    // Generar los próximos 30 días
     const days = [];
     const today = new Date();
     for (let i = 0; i < 30; i++) {

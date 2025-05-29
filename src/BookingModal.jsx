@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './BookingModal.css';
 import BookingCalendar from './BookingCalendar';
+import Spinner from './Spinner'; // nuevo spinner
 
 export default function BookingModal() {
     const [visible, setVisible] = useState(false);
     const [companies, setCompanies] = useState([]);
-    const [loadingStores, setLoadingStores] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [fieldIds, setFieldIds] = useState([]);
     const [services, setServices] = useState([]);
@@ -20,22 +20,16 @@ export default function BookingModal() {
         phoneNumber: '',
         notes: ''
     });
+    const [loadingAvailability, setLoadingAvailability] = useState(false);
 
     const toggleModal = () => setVisible(!visible);
 
     useEffect(() => {
         if (visible && companies.length === 0) {
-            setLoadingStores(true);
             fetch('/api/public-branches-services')
                 .then(res => res.json())
-                .then(data => {
-                    setCompanies(data);
-                    setLoadingStores(false);
-                })
-                .catch(err => {
-                    console.error('Error cargando sucursales:', err);
-                    setLoadingStores(false);
-                });
+                .then(setCompanies)
+                .catch(err => console.error('Error cargando sucursales:', err));
         }
     }, [visible]);
 
@@ -65,8 +59,7 @@ export default function BookingModal() {
         const serviceId = e.target.value;
         const service = services.find(s => s.id === serviceId);
         setSelectedService(service);
-        console.log('🧪 Servicio seleccionado:', service);
-
+        setLoadingAvailability(true);
         try {
             const res = await fetch(`/api/public-availability?companyId=${selectedCompany.id}&serviceId=${serviceId}`);
             const data = await res.json();
@@ -74,12 +67,13 @@ export default function BookingModal() {
             setSelectedDate(data.length > 0 ? new Date(data[0].day) : null);
         } catch (err) {
             console.error('Error cargando disponibilidad:', err);
+        } finally {
+            setLoadingAvailability(false);
         }
     };
 
     const handleTimeSelect = (day, time) => {
         setSelectedTime(time);
-        console.log('Hora seleccionada:', day, time);
     };
 
     const handleDateChange = (date) => {
@@ -100,23 +94,13 @@ export default function BookingModal() {
         }
 
         const resourceIds = selectedCompany?.resources?.map(r => r.id) || [];
-        console.log('Recursos disponibles:', resourceIds);
 
         if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
-            alert('Este servicio no tiene recursos asignados. No se puede reservar.');
+            alert('Este servicio no tiene recursos asignados.');
             return;
         }
 
         const dayString = selectedDate.toLocaleDateString('sv-SE');
-
-        console.log('📤 Enviando reserva con los siguientes datos:');
-        console.table({
-            companyId: selectedCompany.id,
-            serviceId: selectedService.id,
-            resourceIds,
-            date: dayString,
-            time: selectedTime
-        });
 
         try {
             const slotRes = await fetch('/api/book-slot', {
@@ -132,24 +116,11 @@ export default function BookingModal() {
             });
 
             const result = await slotRes.json();
-            console.log('📦 Respuesta de book-slot:', result);
-
             if (!slotRes.ok || !result.data) {
                 throw new Error(result.error || 'No se pudo reservar el slot');
             }
 
             const slotData = result.data.data;
-
-            console.log('📦 Enviando confirmación con:', {
-                reservationId: slotData.id,
-                secret: slotData.secret,
-                companyId: selectedCompany.id,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                phoneNumber: formData.phoneNumber,
-                fieldIds
-            });
 
             await fetch('/api/confirm-appointment', {
                 method: 'POST',
@@ -168,12 +139,8 @@ export default function BookingModal() {
             });
 
             setVisible(false);
-        } catch (error) {
-            console.error('❌ Error al confirmar cita:', {
-                status: error.response?.status,
-                data: error.response?.data,
-                message: error.message
-            });
+        } catch (err) {
+            console.error('❌ Error al confirmar cita:', err);
         }
     };
 
@@ -191,36 +158,12 @@ export default function BookingModal() {
                         {!selectedCompany ? (
                             <>
                                 <p>Selecciona tu tienda más cercana</p>
-                                {loadingStores ? (
-                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
-                                        <svg width="36" height="36" viewBox="0 0 100 100">
-                                            <circle
-                                                cx="50"
-                                                cy="50"
-                                                r="40"
-                                                stroke="#000"
-                                                strokeWidth="10"
-                                                fill="none"
-                                                strokeDasharray="188.5"
-                                                strokeDashoffset="188.5"
-                                            >
-                                                <animate
-                                                    attributeName="stroke-dashoffset"
-                                                    values="188.5;0"
-                                                    dur="1s"
-                                                    repeatCount="indefinite"
-                                                />
-                                            </circle>
-                                        </svg>
-                                    </div>
-                                ) : (
-                                    <select onChange={handleCompanyChange} defaultValue="">
-                                        <option value="" disabled>Selecciona una tienda</option>
-                                        {companies.map(company => (
-                                            <option key={company.id} value={company.id}>{company.name}</option>
-                                        ))}
-                                    </select>
-                                )}
+                                <select onChange={handleCompanyChange} defaultValue="">
+                                    <option value="" disabled>Selecciona una tienda</option>
+                                    {companies.map(company => (
+                                        <option key={company.id} value={company.id}>{company.name}</option>
+                                    ))}
+                                </select>
                             </>
                         ) : (
                             <>
@@ -239,6 +182,8 @@ export default function BookingModal() {
                                             ))}
                                         </select>
                                     </>
+                                ) : loadingAvailability ? (
+                                    <Spinner />
                                 ) : (
                                     <>
                                         <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
