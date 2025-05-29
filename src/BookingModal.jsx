@@ -16,7 +16,7 @@ export default function BookingModal() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        email: '',
+        email: '', 
         phoneNumber: '',
         notes: ''
     });
