@@ -64,6 +64,9 @@
   }
 }
 
+form.booking-form {
+    width: 90%;
+}
 .booking-form input,
 .booking-form textarea {
   width: 100%;
