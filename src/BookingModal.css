@@ -64,3 +64,33 @@
   }
 }
 
+.booking-form input,
+.booking-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #000;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.booking-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.booking-form button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  background-color: #000;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.booking-form button:hover {
+  background-color: #333;
+}

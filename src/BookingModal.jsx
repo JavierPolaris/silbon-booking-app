@@ -273,7 +273,7 @@ export default function BookingModal() {
                                         ) : (
                                             <>
                                                 <div className="booking-summary">
-                                                    
+
                                                     <p><strong>Servicio:</strong> {selectedService.name}</p>
                                                     <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
                                                     <p><strong>Hora:</strong> {selectedTime}</p>
@@ -288,17 +288,52 @@ export default function BookingModal() {
 
                                                 <form onSubmit={handleSubmit} className="booking-form">
                                                     <h4>Introduce tus datos</h4>
-                                                    <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
-                                                    <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
-                                                    <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
-                                                    <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+
+                                                    <input
+                                                        name="firstName"
+                                                        placeholder="Nombre"
+                                                        required
+                                                        pattern="[A-Za-zÀ-ÿ\s]{2,}"
+                                                        title="Introduce un nombre válido (solo letras)"
+                                                        onChange={handleInputChange}
+                                                    />
+
+                                                    <input
+                                                        name="lastName"
+                                                        placeholder="Apellidos"
+                                                        required
+                                                        pattern="[A-Za-zÀ-ÿ\s]{2,}"
+                                                        title="Introduce apellidos válidos (solo letras)"
+                                                        onChange={handleInputChange}
+                                                    />
+
+                                                    <input
+                                                        name="email"
+                                                        type="email"
+                                                        placeholder="Email"
+                                                        required
+                                                        title="Introduce un email válido"
+                                                        onChange={handleInputChange}
+                                                    />
+
+                                                    <input
+                                                        name="phoneNumber"
+                                                        placeholder="Teléfono"
+                                                        required
+                                                        pattern="[0-9]{9,}"
+                                                        title="Introduce un número de teléfono válido"
+                                                        onChange={handleInputChange}
+                                                    />
+
                                                     <textarea
                                                         name="notes"
                                                         placeholder="¿Quieres decirnos algo?"
                                                         onChange={handleInputChange}
                                                     />
+
                                                     <button type="submit">Confirmar cita</button>
                                                 </form>
+
                                             </>
                                         )}
                                     </>
