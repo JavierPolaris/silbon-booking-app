@@ -21,11 +21,27 @@ export default function BookingModal() {
         notes: ''
     });
     const [loadingAvailability, setLoadingAvailability] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState('');
 
     const formatDate = (date) =>
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    const toggleModal = () => setVisible(!visible);
+    const toggleModal = () => {
+        setVisible(!visible);
+        setConfirmationMessage('');
+        setSelectedCompany(null);
+        setSelectedService(null);
+        setAvailability([]);
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+            notes: ''
+        });
+    };
 
     useEffect(() => {
         if (visible && companies.length === 0) {
@@ -85,7 +101,6 @@ export default function BookingModal() {
 
     const handleTimeSelect = (day, time) => {
         setSelectedTime(time);
-        console.log('Hora seleccionada:', day, time);
     };
 
     const handleDateChange = (date) => {
@@ -106,7 +121,6 @@ export default function BookingModal() {
         }
 
         const resourceIds = selectedCompany?.resources?.map(r => r.id) || [];
-        console.log('Recursos disponibles:', resourceIds);
 
         if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
             alert('Este servicio no tiene recursos asignados. No se puede reservar.');
@@ -129,7 +143,6 @@ export default function BookingModal() {
             });
 
             const result = await slotRes.json();
-
             if (!slotRes.ok || !result.data) {
                 throw new Error(result.error || 'No se pudo reservar el slot');
             }
@@ -152,9 +165,13 @@ export default function BookingModal() {
                 })
             });
 
-            setVisible(false);
+            setConfirmationMessage('✅ ¡Tu cita ha sido confirmada! Te hemos enviado un correo con los detalles.');
         } catch (error) {
-            console.error('❌ Error al confirmar cita:', error);
+            console.error('❌ Error al confirmar cita:', {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message
+            });
         }
     };
 
@@ -169,7 +186,11 @@ export default function BookingModal() {
                     <div className="booking-sidebar">
                         <h2>Reserva tu cita</h2>
 
-                        {!selectedCompany ? (
+                        {confirmationMessage ? (
+                            <div className="confirmation-message">
+                                <p>{confirmationMessage}</p>
+                            </div>
+                        ) : !selectedCompany ? (
                             <>
                                 <p>Selecciona tu tienda más cercana</p>
                                 {loadingStores ? (
@@ -245,96 +266,43 @@ export default function BookingModal() {
                                 ) : (
                                     <>
                                         <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
-                                        {!selectedTime ? (
-                                            <>
-                                                <BookingCalendar
-                                                    availableDates={availability}
-                                                    selectedDate={selectedDate}
-                                                    onDateChange={handleDateChange}
-                                                    onTimeSelect={handleTimeSelect}
+                                        <BookingCalendar
+                                            availableDates={availability}
+                                            selectedDate={selectedDate}
+                                            onDateChange={handleDateChange}
+                                            onTimeSelect={handleTimeSelect}
+                                        />
+
+                                        {selectedDate && (
+                                            <div className="calendar-times">
+                                                {availability
+                                                    .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
+                                                    ?.times.map(time => (
+                                                        <button
+                                                            key={time}
+                                                            className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
+                                                            onClick={() => handleTimeSelect(selectedDate, time)}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        )}
+
+                                        {selectedDate && selectedTime && (
+                                            <form onSubmit={handleSubmit} className="booking-form">
+                                                <h4>Introduce tus datos</h4>
+                                                <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
+                                                <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
+                                                <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
+                                                <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+                                                <textarea
+                                                    name="notes"
+                                                    placeholder="¿Quieres decirnos algo?"
+                                                    onChange={handleInputChange}
                                                 />
-
-                                                {selectedDate && (
-                                                    <div className="calendar-times">
-                                                        {availability
-                                                            .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
-                                                            ?.times.map(time => (
-                                                                <button
-                                                                    key={time}
-                                                                    className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
-                                                                    onClick={() => handleTimeSelect(selectedDate, time)}
-                                                                >
-                                                                    {time}
-                                                                </button>
-                                                            ))}
-                                                    </div>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="booking-summary">
-
-                                                    <p><strong>Servicio:</strong> {selectedService.name}</p>
-                                                    <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
-                                                    <p><strong>Hora:</strong> {selectedTime}</p>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setSelectedTime(null)}
-                                                        style={{ marginBottom: '1rem', fontSize: '1.5rem', background: 'none', border: 'none' }}
-                                                    >
-                                                        ← Cambiar día u hora
-                                                    </button>
-                                                </div>
-
-                                                <form onSubmit={handleSubmit} className="booking-form">
-                                                    <h4>Introduce tus datos</h4>
-
-                                                    <input
-                                                        name="firstName"
-                                                        placeholder="Nombre"
-                                                        required
-                                                        pattern="[A-Za-zÀ-ÿ\s]{2,}"
-                                                        title="Introduce un nombre válido (solo letras)"
-                                                        onChange={handleInputChange}
-                                                    />
-
-                                                    <input
-                                                        name="lastName"
-                                                        placeholder="Apellidos"
-                                                        required
-                                                        pattern="[A-Za-zÀ-ÿ\s]{2,}"
-                                                        title="Introduce apellidos válidos (solo letras)"
-                                                        onChange={handleInputChange}
-                                                    />
-
-                                                    <input
-                                                        name="email"
-                                                        type="email"
-                                                        placeholder="Email"
-                                                        required
-                                                        title="Introduce un email válido"
-                                                        onChange={handleInputChange}
-                                                    />
-
-                                                    <input
-                                                        name="phoneNumber"
-                                                        placeholder="Teléfono"
-                                                        required
-                                                        pattern="[0-9]{9,}"
-                                                        title="Introduce un número de teléfono válido"
-                                                        onChange={handleInputChange}
-                                                    />
-
-                                                    <textarea
-                                                        name="notes"
-                                                        placeholder="¿Quieres decirnos algo?"
-                                                        onChange={handleInputChange}
-                                                    />
-
-                                                    <button type="submit">Confirmar cita</button>
-                                                </form>
-
-                                            </>
+                                                <button type="submit">Confirmar cita</button>
+                                            </form>
                                         )}
                                     </>
                                 )}
