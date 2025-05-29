@@ -131,7 +131,7 @@ export default function BookingModal() {
                 throw new Error(result.error || 'No se pudo reservar el slot');
             }
 
-            const slotData = result.data;
+            const slotData = result.data.data;
 
             console.log('📦 Enviando confirmación con:', {
                 reservationId: slotData.id,
