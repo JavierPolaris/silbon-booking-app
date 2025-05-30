@@ -178,8 +178,12 @@ export default function BookingModal() {
             });
 
             setConfirmationMessage('¡Tu cita ha sido confirmada! Te hemos enviado un correo con los detalles.');
-            // 👇 Esto cierra el iframe si lo estás usando como modal embebido
-            window.parent.postMessage('bookingModalClose', '*');
+
+            // Espera un segundo para que React limpie y se cierre bien visualmente
+            setTimeout(() => {
+                window.parent.postMessage('bookingModalClose', '*');
+            }, 500);
+
         } catch (error) {
             console.error('❌ Error al confirmar cita:', {
                 status: error.response?.status,
@@ -195,6 +199,26 @@ export default function BookingModal() {
             {visible && (
                 <div className="booking-modal">
                     <div className="booking-sidebar">
+                        <button
+                            onClick={() => {
+                                closeModal();
+                                setTimeout(() => {
+                                    window.parent.postMessage('bookingModalClose', '*');
+                                }, 300);
+                            }}
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                right: '10px',
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '1.5rem',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ❌
+                        </button>
+
                         {headerImage && (
                             <div className="booking-header-image">
                                 <img src={headerImage} alt="Imagen cabecera" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
