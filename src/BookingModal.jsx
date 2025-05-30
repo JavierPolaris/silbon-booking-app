@@ -388,16 +388,17 @@ export default function BookingModal() {
                                 </>
                             )}
                         </div>
-                        <div
-                            className="booking-overlay"
-                            onClick={() => {
-                                closeModal();
-                                setTimeout(() => {
-                                    window.parent.postMessage('bookingModalClose', '*');
-                                }, 300);
-                            }}
-                        ></div>
                     </div>
+                    <div
+                        className="booking-overlay"
+                        onClick={() => {
+                            closeModal();
+                            setTimeout(() => {
+                                window.parent.postMessage('bookingModalClose', '*');
+                            }, 300);
+                        }}
+                    ></div>
+
                 </div>
             )}
         </>
