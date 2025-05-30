@@ -1,3 +1,12 @@
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/NeueHaasDisplay.woff2') format('woff2'),
+       url('/fonts/NeueHaasDisplay.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Botón para abrir el modal */
 .booking-toggle-button {
   position: fixed;
