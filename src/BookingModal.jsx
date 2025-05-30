@@ -198,6 +198,11 @@ export default function BookingModal() {
 
             {visible && (
                 <div className="booking-modal">
+                    {headerImage && (
+                            <div className="booking-header-image">
+                                <img src={headerImage} alt="Imagen cabecera" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
+                            </div>
+                        )}
                     <div
                         className="booking-sidebar"
                         onClick={(e) => e.stopPropagation()}
@@ -222,11 +227,7 @@ export default function BookingModal() {
                             ❌
                         </button>
 
-                        {headerImage && (
-                            <div className="booking-header-image">
-                                <img src={headerImage} alt="Imagen cabecera" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
-                            </div>
-                        )}
+                        
                         <h2>Reserva tu cita</h2>
 
                         {confirmationMessage ? (
