@@ -198,7 +198,10 @@ export default function BookingModal() {
 
             {visible && (
                 <div className="booking-modal">
-                    <div className="booking-sidebar">
+                    <div
+                        className="booking-sidebar"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <button
                             onClick={() => {
                                 closeModal();
@@ -365,7 +368,16 @@ export default function BookingModal() {
                             </>
                         )}
                     </div>
-                    <div className="booking-overlay" onClick={closeModal}></div>
+                    <div
+                        className="booking-overlay"
+                        onClick={() => {
+                            closeModal();
+                            setTimeout(() => {
+                                window.parent.postMessage('bookingModalClose', '*');
+                            }, 300);
+                        }}
+                    ></div>
+
                 </div>
             )}
         </>
