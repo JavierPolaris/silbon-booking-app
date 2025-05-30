@@ -246,157 +246,158 @@ export default function BookingModal() {
                                 <img src={headerImage} alt="Imagen cabecera" />
                             </div>
                         )}
-                        <h2>Reserva tu cita</h2>
+                        <div className="booking-sidebar-content">
+                            <h2>Reserva tu cita</h2>
 
-                        {confirmationMessage ? (
-                            <div className="confirmation-message">
-                                <p>{confirmationMessage}</p>
-                            </div>
-                        ) : !selectedCompany ? (
-                            <>
-                                <p>Selecciona tu tienda más cercana</p>
-                                {loadingStores ? (
-                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
-                                        <svg width="36" height="36" viewBox="0 0 100 100">
-                                            <circle
-                                                cx="50"
-                                                cy="50"
-                                                r="40"
-                                                stroke="#000"
-                                                strokeWidth="10"
-                                                fill="none"
-                                                strokeDasharray="188.5"
-                                                strokeDashoffset="188.5"
-                                            >
-                                                <animate
-                                                    attributeName="stroke-dashoffset"
-                                                    values="188.5;0"
-                                                    dur="1s"
-                                                    repeatCount="indefinite"
-                                                />
-                                            </circle>
-                                        </svg>
-                                    </div>
-                                ) : (
-                                    <select onChange={handleCompanyChange} defaultValue="">
-                                        <option value="" disabled>Selecciona una tienda</option>
-                                        {companies
-                                            .filter(company => allowedStores.length === 0 || allowedStores.includes(company.id))
-                                            .map(company => (
-                                                <option key={company.id} value={company.id}>{company.name}</option>
-                                            ))}
-
-                                    </select>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
-                                    <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
-                                    <h3>{selectedCompany.name}</h3>
+                            {confirmationMessage ? (
+                                <div className="confirmation-message">
+                                    <p>{confirmationMessage}</p>
                                 </div>
-
-                                {!selectedService ? (
-                                    <>
-                                        <h4 style={{ marginTop: '1rem' }}>Selecciona un servicio:</h4>
-                                        <select onChange={handleServiceChange} defaultValue="">
-                                            <option value="" disabled>Selecciona un servicio</option>
-                                            {services.map(service => (
-                                                <option key={service.id} value={service.id}>{service.name}</option>
-                                            ))}
-                                        </select>
-                                    </>
-                                ) : loadingAvailability ? (
-                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-                                        <svg width="48" height="48" viewBox="0 0 100 100">
-                                            <circle
-                                                cx="50"
-                                                cy="50"
-                                                r="40"
-                                                stroke="#000"
-                                                strokeWidth="10"
-                                                fill="none"
-                                                strokeDasharray="188.5"
-                                                strokeDashoffset="188.5"
-                                            >
-                                                <animate
-                                                    attributeName="stroke-dashoffset"
-                                                    values="188.5;0"
-                                                    dur="1s"
-                                                    repeatCount="indefinite"
-                                                />
-                                            </circle>
-                                        </svg>
-                                    </div>
-                                ) : !selectedTime ? (
-                                    <>
-                                        <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
-                                        <BookingCalendar
-                                            availableDates={availability}
-                                            selectedDate={selectedDate}
-                                            onDateChange={handleDateChange}
-                                            onTimeSelect={handleTimeSelect}
-                                        />
-
-                                        {selectedDate && (
-                                            <div className="calendar-times">
-                                                {availability
-                                                    .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
-                                                    ?.times.map(time => (
-                                                        <button
-                                                            key={time}
-                                                            className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
-                                                            onClick={() => handleTimeSelect(selectedDate, time)}
-                                                        >
-                                                            {time}
-                                                        </button>
-                                                    ))}
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="booking-summary">
-                                            <p><strong>Servicio:</strong> {selectedService.name}</p>
-                                            <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
-                                            <p><strong>Hora:</strong> {selectedTime}</p>
-                                            <button
-                                                type="button"
-                                                onClick={() => setSelectedTime(null)}
-                                                style={{ marginBottom: '1rem', background: 'none', border: 'none', fontSize: '1.5rem' }}
-                                            >
-                                                ← Cambiar día u hora
-                                            </button>
+                            ) : !selectedCompany ? (
+                                <>
+                                    <p>Selecciona tu tienda más cercana</p>
+                                    {loadingStores ? (
+                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                                            <svg width="36" height="36" viewBox="0 0 100 100">
+                                                <circle
+                                                    cx="50"
+                                                    cy="50"
+                                                    r="40"
+                                                    stroke="#000"
+                                                    strokeWidth="10"
+                                                    fill="none"
+                                                    strokeDasharray="188.5"
+                                                    strokeDashoffset="188.5"
+                                                >
+                                                    <animate
+                                                        attributeName="stroke-dashoffset"
+                                                        values="188.5;0"
+                                                        dur="1s"
+                                                        repeatCount="indefinite"
+                                                    />
+                                                </circle>
+                                            </svg>
                                         </div>
+                                    ) : (
+                                        <select onChange={handleCompanyChange} defaultValue="">
+                                            <option value="" disabled>Selecciona una tienda</option>
+                                            {companies
+                                                .filter(company => allowedStores.length === 0 || allowedStores.includes(company.id))
+                                                .map(company => (
+                                                    <option key={company.id} value={company.id}>{company.name}</option>
+                                                ))}
 
-                                        <form onSubmit={handleSubmit} className="booking-form">
-                                            <h4>Introduce tus datos</h4>
-                                            <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
-                                            <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
-                                            <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
-                                            <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
-                                            <textarea
-                                                name="notes"
-                                                placeholder="¿Quieres decirnos algo?"
-                                                onChange={handleInputChange}
+                                        </select>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+                                        <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                                        <h3>{selectedCompany.name}</h3>
+                                    </div>
+
+                                    {!selectedService ? (
+                                        <>
+                                            <h4 style={{ marginTop: '1rem' }}>Selecciona un servicio:</h4>
+                                            <select onChange={handleServiceChange} defaultValue="">
+                                                <option value="" disabled>Selecciona un servicio</option>
+                                                {services.map(service => (
+                                                    <option key={service.id} value={service.id}>{service.name}</option>
+                                                ))}
+                                            </select>
+                                        </>
+                                    ) : loadingAvailability ? (
+                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                                            <svg width="48" height="48" viewBox="0 0 100 100">
+                                                <circle
+                                                    cx="50"
+                                                    cy="50"
+                                                    r="40"
+                                                    stroke="#000"
+                                                    strokeWidth="10"
+                                                    fill="none"
+                                                    strokeDasharray="188.5"
+                                                    strokeDashoffset="188.5"
+                                                >
+                                                    <animate
+                                                        attributeName="stroke-dashoffset"
+                                                        values="188.5;0"
+                                                        dur="1s"
+                                                        repeatCount="indefinite"
+                                                    />
+                                                </circle>
+                                            </svg>
+                                        </div>
+                                    ) : !selectedTime ? (
+                                        <>
+                                            <h3 style={{ marginTop: '1rem' }}>{selectedService.name}</h3>
+                                            <BookingCalendar
+                                                availableDates={availability}
+                                                selectedDate={selectedDate}
+                                                onDateChange={handleDateChange}
+                                                onTimeSelect={handleTimeSelect}
                                             />
-                                            <button type="submit">Confirmar cita</button>
-                                        </form>
-                                    </>
-                                )}
-                            </>
-                        )}
-                    </div>
-                    <div
-                        className="booking-overlay"
-                        onClick={() => {
-                            closeModal();
-                            setTimeout(() => {
-                                window.parent.postMessage('bookingModalClose', '*');
-                            }, 300);
-                        }}
-                    ></div>
 
+                                            {selectedDate && (
+                                                <div className="calendar-times">
+                                                    {availability
+                                                        .find(d => new Date(d.day).toDateString() === selectedDate.toDateString())
+                                                        ?.times.map(time => (
+                                                            <button
+                                                                key={time}
+                                                                className={`time-slot ${time === selectedTime ? 'selected' : ''}`}
+                                                                onClick={() => handleTimeSelect(selectedDate, time)}
+                                                            >
+                                                                {time}
+                                                            </button>
+                                                        ))}
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="booking-summary">
+                                                <p><strong>Servicio:</strong> {selectedService.name}</p>
+                                                <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
+                                                <p><strong>Hora:</strong> {selectedTime}</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setSelectedTime(null)}
+                                                    style={{ marginBottom: '1rem', background: 'none', border: 'none', fontSize: '1.5rem' }}
+                                                >
+                                                    ← Cambiar día u hora
+                                                </button>
+                                            </div>
+
+                                            <form onSubmit={handleSubmit} className="booking-form">
+                                                <h4>Introduce tus datos</h4>
+                                                <input name="firstName" required placeholder="Nombre" onChange={handleInputChange} />
+                                                <input name="lastName" required placeholder="Apellidos" onChange={handleInputChange} />
+                                                <input name="email" type="email" required placeholder="Email" onChange={handleInputChange} />
+                                                <input name="phoneNumber" required placeholder="Teléfono" onChange={handleInputChange} />
+                                                <textarea
+                                                    name="notes"
+                                                    placeholder="¿Quieres decirnos algo?"
+                                                    onChange={handleInputChange}
+                                                />
+                                                <button type="submit">Confirmar cita</button>
+                                            </form>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                        <div
+                            className="booking-overlay"
+                            onClick={() => {
+                                closeModal();
+                                setTimeout(() => {
+                                    window.parent.postMessage('bookingModalClose', '*');
+                                }, 300);
+                            }}
+                        ></div>
+                    </div>
                 </div>
             )}
         </>
