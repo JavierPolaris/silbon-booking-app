@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
   src: url('/fonts/NeueHaasGroteskDisplay-Regular.woff2') format('woff2'),
-       url('/fonts/NeueHaasGroteskDisplay-Regular.woff') format('woff');
+    url('/fonts/NeueHaasGroteskDisplay-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,18 +10,29 @@
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
   src: url('/fonts/NeueHaasGroteskDisplay-Bold.woff2') format('woff2'),
-       url('/fonts/NeueHaasGroteskDisplay-Bold.woff') format('woff');
+    url('/fonts/NeueHaasGroteskDisplay-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 body,
-h1, h2, h3, h4, h5, h6,
-input, textarea, select,
-button, p, span, div {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+textarea,
+select,
+button,
+p,
+span,
+div {
   font-family: 'Neue Haas Grotesk Display', sans-serif;
 }
+
 select {
   appearance: none;
   -webkit-appearance: none;
@@ -48,6 +59,7 @@ select option {
   font-family: 'Neue Haas Grotesk Display', sans-serif;
   font-size: 1rem;
 }
+
 .booking-sidebar {
   width: 400px;
   max-width: 100%;
@@ -63,6 +75,7 @@ select option {
   flex: 1;
   overflow-y: auto;
   padding: 2rem;
+  margin-block-end: 30px;
 }
 
 
@@ -91,13 +104,15 @@ select option {
 
 
 .booking-sidebar {
-  padding: 2rem; /* o lo que uses */
+  padding: 2rem;
+  /* o lo que uses */
   position: relative;
   background: white;
 }
 
 .booking-header-image {
-  margin: -2rem -2rem 1rem -2rem; /* rompe el padding horizontal */
+  margin: -2rem -2rem 1rem -2rem;
+  /* rompe el padding horizontal */
 }
 
 .booking-header-image img {
@@ -129,8 +144,9 @@ select option {
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   animation: slideIn 0.3s ease-out;
   position: absolute;
-    z-index: 9999;
+  z-index: 9999;
 }
+
 .confirm-button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
@@ -147,14 +163,16 @@ select option {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0%);
   }
 }
 
 form.booking-form {
-    width: 90%;
+  width: 90%;
 }
+
 .booking-form input,
 .booking-form textarea {
   width: 100%;
