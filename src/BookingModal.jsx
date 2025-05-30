@@ -215,16 +215,31 @@ export default function BookingModal() {
                                 right: '10px',
                                 background: 'none',
                                 border: 'none',
-                                fontSize: '1.5rem',
+                                padding: '0',
                                 cursor: 'pointer'
                             }}
+                            aria-label="Cerrar"
                         >
-                            ❌
+                            <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                fill="none"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    d="M1 1L15 15M1 15L15 1"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                />
+                            </svg>
                         </button>
+
 
                         {headerImage && (
                             <div className="booking-header-image">
-                                <img src={headerImage} alt="Imagen cabecera"  />
+                                <img src={headerImage} alt="Imagen cabecera" />
                             </div>
                         )}
                         <h2>Reserva tu cita</h2>
