@@ -219,26 +219,7 @@ export default function BookingModal() {
                                 cursor: 'pointer'
                             }}
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="{{ width | default: 32 }}"
-                                height="{{ height | default: 32 }}"
-                                class="{{ class | strip }}"
-                                viewBox="0 0 32 32"
-                                fill="none">
-                                <line
-                                    x1="4.57129"
-                                    y1="10.9287"
-                                    x2="27.4284"
-                                    y2="10.9287"
-                                    stroke="currentColor" />
-                                <line
-                                    x1="4.57129"
-                                    y1="20.0713"
-                                    x2="27.4284"
-                                    y2="20.0713"
-                                    stroke="currentColor" />
-                            </svg>
+                            ❌
                         </button>
 
                         {headerImage && (
