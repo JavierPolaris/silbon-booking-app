@@ -213,7 +213,7 @@ export default function BookingModal() {
                             style={{
                                 position: 'absolute',
                                 top: '10px',
-                                right: '10px',
+                                right: '30px',
                                 background: 'none',
                                 border: 'none',
                                 padding: '0',
