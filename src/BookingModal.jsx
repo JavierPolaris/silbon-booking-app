@@ -3,6 +3,9 @@ import './BookingModal.css';
 import BookingCalendar from './BookingCalendar';
 
 export default function BookingModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const allowedStores = urlParams.get("allowedStores")?.split(",") || [];
+    const headerImage = urlParams.get("headerImage");
     const [visible, setVisible] = useState(false);
     const [companies, setCompanies] = useState([]);
     const [loadingStores, setLoadingStores] = useState(false);
@@ -26,7 +29,7 @@ export default function BookingModal() {
     const formatDate = (date) =>
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    
+
     const openModal = () => setVisible(true);
     const closeModal = () => {
         setVisible(!visible);
@@ -188,10 +191,15 @@ export default function BookingModal() {
 
     return (
         <>
-            
+
             {visible && (
                 <div className="booking-modal">
                     <div className="booking-sidebar">
+                        {headerImage && (
+                            <div className="booking-header-image">
+                                <img src={headerImage} alt="Imagen cabecera" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
+                            </div>
+                        )}
                         <h2>Reserva tu cita</h2>
 
                         {confirmationMessage ? (
@@ -226,9 +234,12 @@ export default function BookingModal() {
                                 ) : (
                                     <select onChange={handleCompanyChange} defaultValue="">
                                         <option value="" disabled>Selecciona una tienda</option>
-                                        {companies.map(company => (
-                                            <option key={company.id} value={company.id}>{company.name}</option>
-                                        ))}
+                                        {companies
+                                            .filter(company => allowedStores.length === 0 || allowedStores.includes(company.id))
+                                            .map(company => (
+                                                <option key={company.id} value={company.id}>{company.name}</option>
+                                            ))}
+
                                     </select>
                                 )}
                             </>
