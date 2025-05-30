@@ -6,6 +6,7 @@ export default function BookingModal() {
     const urlParams = new URLSearchParams(window.location.search);
     const allowedStores = urlParams.get("allowedStores")?.split(",") || [];
     const headerImage = urlParams.get("headerImage");
+    const closeButtonColor = urlParams.get("closeButtonColor") || 'black';
     const [visible, setVisible] = useState(false);
     const [companies, setCompanies] = useState([]);
     const [loadingStores, setLoadingStores] = useState(false);
@@ -227,6 +228,7 @@ export default function BookingModal() {
                                 width="24"
                                 height="24"
                                 viewBox="0 0 16 16"
+                                style={{ color: closeButtonColor }}
                             >
                                 <path
                                     d="M1 1L15 15M1 15L15 1"
@@ -234,6 +236,8 @@ export default function BookingModal() {
                                     strokeWidth="1.5"
                                 />
                             </svg>
+
+
                         </button>
 
 
