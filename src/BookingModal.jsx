@@ -32,7 +32,7 @@ export default function BookingModal() {
 
     const openModal = () => setVisible(true);
     const closeModal = () => {
-        setVisible(!visible);
+        setVisible(false);
         setConfirmationMessage('');
         setSelectedCompany(null);
         setSelectedService(null);
