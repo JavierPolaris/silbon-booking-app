@@ -1,10 +1,26 @@
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
-  src: url('/fonts/NeueHaasDisplay.woff2') format('woff2'),
-       url('/fonts/NeueHaasDisplay.woff') format('woff');
-  font-weight: normal;
+  src: url('/fonts/NeueHaasGroteskDisplay-Regular.woff2') format('woff2'),
+       url('/fonts/NeueHaasGroteskDisplay-Regular.woff') format('woff');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/NeueHaasGroteskDisplay-Bold.woff2') format('woff2'),
+       url('/fonts/NeueHaasGroteskDisplay-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+body,
+h1, h2, h3, h4, h5, h6,
+input, textarea, select,
+button, p, span, div {
+  font-family: 'Neue Haas Grotesk Display', sans-serif;
 }
 
 /* Botón para abrir el modal */
