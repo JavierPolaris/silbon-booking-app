@@ -20,6 +20,23 @@
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 9998;
 }
+.booking-sidebar {
+  padding: 0;
+}
+
+.booking-header-image {
+  margin: 0;
+  padding: 0;
+}
+
+.booking-header-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none; /* Opcional, si quieres que no limite a 200px */
+  object-fit: cover;
+  border-radius: 0;
+}
 
 /* Contenedor principal del modal */
 .booking-modal {
