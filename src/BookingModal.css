@@ -32,6 +32,9 @@ span,
 div {
   font-family: 'Neue Haas Grotesk Display', sans-serif;
 }
+button{
+  color: #000;
+}
 
 select {
   appearance: none;
