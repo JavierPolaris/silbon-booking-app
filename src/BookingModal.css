@@ -227,3 +227,25 @@ form.booking-form {
   background-color: #f3f3f3;
   cursor: not-allowed;
 }
+
+
+@media screen and (max-width: 768px) {
+  .booking-sidebar {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .booking-modal {
+    justify-content: center;
+  }
+
+  .booking-toggle-button {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
