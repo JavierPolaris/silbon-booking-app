@@ -292,10 +292,13 @@ export default function BookingModal() {
                                 </>
                             ) : (
                                 <>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
-                                        <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
-                                        <h3>{selectedCompany.name}</h3>
-                                    </div>
+                                    {selectedCompany && !selectedTime && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+                                            <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                                            <h3>{selectedCompany.name}</h3>
+                                        </div>
+                                    )}
+
 
                                     {!selectedService ? (
                                         <>
