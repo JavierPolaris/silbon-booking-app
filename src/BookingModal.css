@@ -207,6 +207,7 @@ form.booking-form {
   background-color: #333;
 }
 .booking-sidebar select {
+  color: #000;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -228,7 +229,9 @@ form.booking-form {
   cursor: not-allowed;
 }
 
-
+.booking-sidebar select:invalid {
+  color: #999; /* opcional: para placeholder tipo “Selecciona una tienda” */
+}
 @media screen and (max-width: 768px) {
   .booking-sidebar {
     width: 100%;
