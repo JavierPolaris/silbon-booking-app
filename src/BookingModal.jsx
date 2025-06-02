@@ -358,17 +358,21 @@ export default function BookingModal() {
                                     ) : (
                                         <>
                                             <div className="booking-summary">
-                                                <p><strong>Servicio:</strong> {selectedService.name}</p>
-                                                <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
-                                                <p><strong>Hora:</strong> {selectedTime}</p>
                                                 <button
                                                     type="button"
                                                     onClick={() => setSelectedTime(null)}
-                                                    style={{ marginBottom: '1rem', background: 'none', border: 'none', fontSize: '1.5rem' }}
+                                                    style={{ background: 'none', border: 'none', fontSize: '1.2rem', padding: 0, marginBottom: '1rem', cursor: 'pointer' }}
                                                 >
                                                     ← Cambiar día u hora
                                                 </button>
+
+                                                <h3 style={{ fontWeight: '600', fontSize: '1rem', marginBottom: '1rem' }}>{selectedCompany.name}</h3>
+
+                                                <p><strong>Servicio:</strong> {selectedService.name}</p>
+                                                <p><strong>Fecha:</strong> {formatDate(selectedDate)}</p>
+                                                <p><strong>Hora:</strong> {selectedTime}</p>
                                             </div>
+
 
                                             <form onSubmit={handleSubmit} className="booking-form">
                                                 <h4>Introduce tus datos</h4>
