@@ -249,4 +249,7 @@ form.booking-form {
     bottom: 1rem;
     right: 1rem;
   }
+  .booking-header-image {
+    margin: 0;
+}
 }
