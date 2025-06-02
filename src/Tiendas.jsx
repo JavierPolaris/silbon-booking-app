@@ -16,7 +16,7 @@ export default function Tiendas() {
         console.error('Error cargando tiendas:', err);
         setLoading(false);
       });
-  }, []);
+  }, []); 
 
   const copyToClipboard = (id) => {
     navigator.clipboard.writeText(id)
