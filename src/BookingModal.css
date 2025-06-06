@@ -32,8 +32,7 @@ span,
 div {
   font-family: 'Neue Haas Grotesk Display', sans-serif;
 }
-
-button {
+button{
   color: #000;
 }
 
@@ -64,52 +63,29 @@ select option {
   font-size: 1rem;
 }
 
-.booking-modal {
-  position: fixed;
-  inset: 0;
+.booking-sidebar {
+  width: 400px;
+  max-width: 100%;
+  height: 100vh;
+  background-color: white;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  position: absolute;
   z-index: 9999;
 }
 
-.modal-close-button {
-  position: fixed;
-  top: 1rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  z-index: 10000;
-}
-
-.booking-scroll-container {
-  height: 100vh;
+.booking-sidebar-content {
+  flex: 1;
   overflow-y: auto;
-  padding-top: 3rem;
-  display: flex;
-  justify-content: center;
-}
-
-.booking-sidebar {
   padding: 2rem;
-  background: white;
-  max-width: 600px;
-  width: 100%;
-  box-sizing: border-box;
+  margin-block-end: 30px;
+}
+.booking-sidebar-content::-webkit-scrollbar {
+    display: none;
 }
 
-.booking-header-image {
-  margin: -2rem -2rem 1rem -2rem;
-}
 
-.booking-header-image img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
+/* Botón para abrir el modal */
 .booking-toggle-button {
   position: fixed;
   bottom: 2rem;
@@ -124,11 +100,57 @@ select option {
   border-radius: 4px;
 }
 
+/* Fondo oscuro del modal */
 .booking-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 9998;
+}
+
+
+.booking-sidebar {
+  padding: 2rem;
+  /* o lo que uses */
+  position: relative;
+  background: white;
+}
+
+.booking-header-image {
+  margin: -2rem -2rem 1rem -2rem;
+  /* rompe el padding horizontal */
+}
+
+.booking-header-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+
+
+/* Contenedor principal del modal */
+.booking-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 9999;
+}
+
+/* Sidebar */
+.booking-sidebar {
+  width: 400px;
+  max-width: 100%;
+  height: 100%;
+  background-color: white;
+  padding: 2rem;
+  overflow-y: auto;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  position: absolute;
+  z-index: 9999;
 }
 
 .confirm-button {
@@ -142,10 +164,12 @@ select option {
   cursor: pointer;
 }
 
+/* Animación de entrada */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0%);
   }
@@ -185,7 +209,6 @@ form.booking-form {
 .booking-form button:hover {
   background-color: #333;
 }
-
 .booking-sidebar select {
   color: #000;
   appearance: none;
@@ -210,17 +233,18 @@ form.booking-form {
 }
 
 .booking-sidebar select:invalid {
-  color: #999;
+  color: #999; /* opcional: para placeholder tipo “Selecciona una tienda” */
 }
-
 @media screen and (max-width: 768px) {
-  .booking-scroll-container {
-    padding-top: 3rem;
-  }
-
   .booking-sidebar {
     width: 100%;
-    padding: 1.5rem;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out;
+    padding: 0;
   }
 
   .booking-modal {
@@ -231,8 +255,25 @@ form.booking-form {
     bottom: 1rem;
     right: 1rem;
   }
-
   .booking-header-image {
     margin: 0;
-  }
+}
+}
+.modal-close-button {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.booking-scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+  padding-top: 3rem; /* espacio para la X */
+  display: flex;
+  justify-content: center;
 }
