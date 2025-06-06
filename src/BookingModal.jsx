@@ -241,12 +241,13 @@ export default function BookingModal() {
                         </button>
 
 
-                        {headerImage && (
+                       
+                        <div className="booking-sidebar-content">
+                             {headerImage && (
                             <div className="booking-header-image">
                                 <img src={headerImage} alt="Imagen cabecera" />
                             </div>
                         )}
-                        <div className="booking-sidebar-content">
                             <h2>Reserva tu cita</h2>
 
                             {confirmationMessage ? (

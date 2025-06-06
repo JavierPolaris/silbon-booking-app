@@ -259,21 +259,3 @@ form.booking-form {
     margin: 0;
 }
 }
-.modal-close-button {
-  position: fixed;
-  top: 1rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  z-index: 10000;
-}
-
-.booking-scroll-container {
-  height: 100vh;
-  overflow-y: auto;
-  padding-top: 3rem; /* espacio para la X */
-  display: flex;
-  justify-content: center;
-}
