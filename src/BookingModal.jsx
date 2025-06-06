@@ -32,12 +32,14 @@ export default function BookingModal() {
 
 
     const openModal = () => {
-        document.body.classList.add('modal-open'); // ⛔ bloquea el scroll de fondo
+        document.documentElement.style.overflow = 'hidden'; // bloquea scroll en todo
+        document.body.style.overflow = 'hidden';
         setVisible(true);
-    }
+    };
 
     const closeModal = () => {
-        document.body.classList.remove('modal-open'); // ✅ lo vuelve a permitir
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
         setVisible(false);
         setConfirmationMessage('');
         setSelectedCompany(null);
@@ -246,13 +248,13 @@ export default function BookingModal() {
                         </button>
 
 
-                       
+
                         <div className="booking-sidebar-content">
-                             {headerImage && (
-                            <div className="booking-header-image">
-                                <img src={headerImage} alt="Imagen cabecera" />
-                            </div>
-                        )}
+                            {headerImage && (
+                                <div className="booking-header-image">
+                                    <img src={headerImage} alt="Imagen cabecera" />
+                                </div>
+                            )}
                             <h2>Reserva tu cita</h2>
 
                             {confirmationMessage ? (
