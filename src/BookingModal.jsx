@@ -31,27 +31,9 @@ export default function BookingModal() {
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
 
-    let scrollPosition = 0;
-
-    const openModal = () => {
-        scrollPosition = window.scrollY;
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition}px`;
-        document.body.style.left = '0';
-        document.body.style.right = '0';
-        document.body.style.overflow = 'hidden';
-        setVisible(true);
-    };
-
+    const openModal = () => setVisible(true);
     const closeModal = () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, scrollPosition);
         setVisible(false);
-
         setConfirmationMessage('');
         setSelectedCompany(null);
         setSelectedService(null);
@@ -66,7 +48,6 @@ export default function BookingModal() {
             notes: ''
         });
     };
-
     useEffect(() => {
         const listener = (e) => {
             if (e.data === 'openBookingModal') openModal();
@@ -260,13 +241,13 @@ export default function BookingModal() {
                         </button>
 
 
-
+                       
                         <div className="booking-sidebar-content">
-                            {headerImage && (
-                                <div className="booking-header-image">
-                                    <img src={headerImage} alt="Imagen cabecera" />
-                                </div>
-                            )}
+                             {headerImage && (
+                            <div className="booking-header-image">
+                                <img src={headerImage} alt="Imagen cabecera" />
+                            </div>
+                        )}
                             <h2>Reserva tu cita</h2>
 
                             {confirmationMessage ? (
