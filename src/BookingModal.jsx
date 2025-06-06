@@ -31,8 +31,13 @@ export default function BookingModal() {
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
 
-    const openModal = () => setVisible(true);
+    const openModal = () => {
+        document.body.classList.add('modal-open'); // ⛔ bloquea el scroll de fondo
+        setVisible(true);
+    }
+
     const closeModal = () => {
+        document.body.classList.remove('modal-open'); // ✅ lo vuelve a permitir
         setVisible(false);
         setConfirmationMessage('');
         setSelectedCompany(null);
