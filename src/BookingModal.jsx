@@ -31,16 +31,27 @@ export default function BookingModal() {
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
 
+    let scrollPosition = 0;
+
     const openModal = () => {
-        document.documentElement.style.overflow = 'hidden'; // bloquea scroll en todo
+        scrollPosition = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollPosition}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
         document.body.style.overflow = 'hidden';
         setVisible(true);
     };
 
     const closeModal = () => {
-        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
         document.body.style.overflow = '';
+        window.scrollTo(0, scrollPosition);
         setVisible(false);
+
         setConfirmationMessage('');
         setSelectedCompany(null);
         setSelectedService(null);
@@ -55,6 +66,7 @@ export default function BookingModal() {
             notes: ''
         });
     };
+
     useEffect(() => {
         const listener = (e) => {
             if (e.data === 'openBookingModal') openModal();
