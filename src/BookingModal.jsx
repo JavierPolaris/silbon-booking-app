@@ -54,7 +54,7 @@ export default function BookingModal() {
     }, [visible]);
 
     const allowedCompanies = companies.filter(company => allowedStores.length === 0 || allowedStores.includes(company.id));
-    const companiesWithCity = allowedCompanies.filter(company => company.city && company.city.trim() !== '');
+    const companiesWithCity = companies.filter(company => company.city && company.city.trim() !== '');
     const branchesByCity = companiesWithCity.reduce((acc, branch) => { if (!acc[branch.city]) acc[branch.city] = []; acc[branch.city].push(branch); return acc; }, {});
 
     const handleCompanyChange = (e) => {
@@ -106,7 +106,7 @@ export default function BookingModal() {
                                                 </circle>
                                             </svg>
                                         </div>
-                                    ) : Object.keys(branchesByCity).length > 0 ? (
+                                    ) : allowedStores.length === 0 ? (
                                         <>
                                             <select onChange={(e) => setSelectedCity(e.target.value)} value={selectedCity}>
                                                 <option value="">Selecciona ciudad</option>
