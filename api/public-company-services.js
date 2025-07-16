@@ -16,9 +16,8 @@ export default async function handler(req, res) {
         const token = await getTimifyToken();
         if (!token) return res.status(401).json({ error: 'Token inválido' });
 
-        const { data } = await axios.get(`https://api.timify.com/v1/booker-services/services`, {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { company_id: companyId }
+        const { data } = await axios.get(`https://api.timify.com/v1/companies/${companyId}/services`, {
+            headers: { Authorization: `Bearer ${token}` }
         });
 
         const services = data?.data?.map(service => ({
@@ -26,7 +25,7 @@ export default async function handler(req, res) {
             name: service.name
         })) || [];
 
-        res.status(200).json({ services });
+        res.status(200).json(services);
     } catch (err) {
         console.error('❌ Error al obtener servicios:', err.response?.data || err.message);
         res.status(500).json({ error: 'Error interno del servidor' });
