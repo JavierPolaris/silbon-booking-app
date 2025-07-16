@@ -53,9 +53,15 @@ export default function BookingModal() {
         }
     }, [visible]);
 
-    const allowedCompanies = companies.filter(company => allowedStores.length === 0 || allowedStores.includes(company.id));
-    const companiesWithCity = companies.filter(company => company.city && company.city.trim() !== '');
-    const branchesByCity = companiesWithCity.reduce((acc, branch) => { if (!acc[branch.city]) acc[branch.city] = []; acc[branch.city].push(branch); return acc; }, {});
+const allowedCompanies = companies.filter(company => allowedStores.length === 0 || allowedStores.includes(company.id));
+
+const companiesWithCity = allowedCompanies.filter(company => company.city && company.city.trim() !== '');
+const branchesByCity = companiesWithCity.reduce((acc, branch) => {
+    if (!acc[branch.city]) acc[branch.city] = [];
+    acc[branch.city].push(branch);
+    return acc;
+}, {});
+
 
     const handleCompanyChange = (e) => {
         const companyId = e.target.value;
