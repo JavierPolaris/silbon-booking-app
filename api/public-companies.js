@@ -20,6 +20,8 @@ export default async function handler(req, res) {
         enterprise_id: enterpriseId
       }
     });
+// 🔍 Aquí logueas todo lo que devuelve Timify
+console.log('🔍 Todas las sucursales recibidas:', JSON.stringify(response.data.data, null, 2));
 
     const companies = response.data?.data?.map(c => ({
       id: c.id,
