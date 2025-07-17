@@ -57,21 +57,37 @@ export default function BookingModal() {
     }, []);
 
     useEffect(() => {
-        if (visible && companies.length === 0) {
-            setLoadingStores(true);
-            fetch('/api/public-branches-services')
-                .then(res => res.json())
-                .then(data => {
-                    setCompanies(data);
-                    setLoadingStores(false);
-                    console.log('Sucursales y servicios cargados:', data);
-                })
-                .catch(err => {
-                    console.error('Error cargando sucursales:', err);
-                    setLoadingStores(false);
+    if (visible && companies.length === 0) {
+        setLoadingStores(true);
+
+        Promise.all([
+            fetch('/api/public-branches-services').then(res => res.json()),
+            fetch('/api/public-companies').then(res => res.json())
+        ])
+            .then(([branchesData, companiesData]) => {
+                console.log('✅ Sucursales con servicios (branchesData):', branchesData);
+                console.log('✅ Sucursales con ciudades (companiesData):', companiesData);
+
+                const companiesWithCity = branchesData.map(branch => {
+                    const matchingCompany = companiesData.find(c => c.id === branch.id);
+                    return {
+                        ...branch,
+                        city: matchingCompany?.city || null
+                    };
                 });
-        }
-    }, [visible]);
+
+                console.log('✅ Resultado final combinado:', companiesWithCity);
+
+                setCompanies(companiesWithCity);
+                setLoadingStores(false);
+            })
+            .catch(err => {
+                console.error('❌ Error cargando sucursales:', err);
+                setLoadingStores(false);
+            });
+    }
+}, [visible]);
+
 
     const handleCompanyChange = (e) => {
         const companyId = e.target.value;
