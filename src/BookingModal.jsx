@@ -73,8 +73,7 @@ export default function BookingModal() {
                 fetch('/api/public-companies').then(res => res.json())
             ])
                 .then(([branchesData, companiesData]) => {
-                    console.log('✅ Sucursales con servicios (branchesData):', branchesData);
-                    console.log('✅ Sucursales con ciudades (companiesData):', companiesData);
+                    
 
                     const companiesWithCity = branchesData.map(branch => {
                         const matchingCompany = companiesData.find(c => c.id === branch.id);
@@ -84,7 +83,7 @@ export default function BookingModal() {
                         };
                     });
 
-                    console.log('✅ Resultado final combinado:', companiesWithCity);
+                    
 
                     setCompanies(companiesWithCity);
                     setLoadingStores(false);
