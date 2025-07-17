@@ -64,6 +64,7 @@ export default function BookingModal() {
                 .then(data => {
                     setCompanies(data);
                     setLoadingStores(false);
+                    console.log('Sucursales y servicios cargados:', data);
                 })
                 .catch(err => {
                     console.error('Error cargando sucursales:', err);
