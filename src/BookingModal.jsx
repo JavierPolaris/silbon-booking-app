@@ -17,6 +17,8 @@ export default function BookingModal() {
     const [availability, setAvailability] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -26,6 +28,12 @@ export default function BookingModal() {
     });
     const [loadingAvailability, setLoadingAvailability] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
+
+    const allowedCompanies = companies.filter(company =>
+        allowedStores.length === 0 || allowedStores.includes(company.id)
+    );
+
+    const cities = [...new Set(allowedCompanies.map(company => company.city).filter(Boolean))];
 
     const formatDate = (date) =>
         date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -57,37 +65,44 @@ export default function BookingModal() {
     }, []);
 
     useEffect(() => {
-    if (visible && companies.length === 0) {
-        setLoadingStores(true);
+        if (visible && companies.length === 0) {
+            setLoadingStores(true);
 
-        Promise.all([
-            fetch('/api/public-branches-services').then(res => res.json()),
-            fetch('/api/public-companies').then(res => res.json())
-        ])
-            .then(([branchesData, companiesData]) => {
-                console.log('✅ Sucursales con servicios (branchesData):', branchesData);
-                console.log('✅ Sucursales con ciudades (companiesData):', companiesData);
+            Promise.all([
+                fetch('/api/public-branches-services').then(res => res.json()),
+                fetch('/api/public-companies').then(res => res.json())
+            ])
+                .then(([branchesData, companiesData]) => {
+                    console.log('✅ Sucursales con servicios (branchesData):', branchesData);
+                    console.log('✅ Sucursales con ciudades (companiesData):', companiesData);
 
-                const companiesWithCity = branchesData.map(branch => {
-                    const matchingCompany = companiesData.find(c => c.id === branch.id);
-                    return {
-                        ...branch,
-                        city: matchingCompany?.city || null
-                    };
+                    const companiesWithCity = branchesData.map(branch => {
+                        const matchingCompany = companiesData.find(c => c.id === branch.id);
+                        return {
+                            ...branch,
+                            city: matchingCompany?.city || null
+                        };
+                    });
+
+                    console.log('✅ Resultado final combinado:', companiesWithCity);
+
+                    setCompanies(companiesWithCity);
+                    setLoadingStores(false);
+                })
+                .catch(err => {
+                    console.error('❌ Error cargando sucursales:', err);
+                    setLoadingStores(false);
                 });
+        }
+    }, [visible]);
 
-                console.log('✅ Resultado final combinado:', companiesWithCity);
-
-                setCompanies(companiesWithCity);
-                setLoadingStores(false);
-            })
-            .catch(err => {
-                console.error('❌ Error cargando sucursales:', err);
-                setLoadingStores(false);
-            });
-    }
-}, [visible]);
-
+    const handleCityChange = (e) => {
+        setSelectedCity(e.target.value);
+        setSelectedCompany(null);
+        setServices([]);
+        setSelectedService(null);
+    };
+    const filteredCompanies = allowedCompanies.filter(company => company.city === selectedCity);
 
     const handleCompanyChange = (e) => {
         const companyId = e.target.value;
@@ -258,13 +273,13 @@ export default function BookingModal() {
                         </button>
 
 
-                       
+
                         <div className="booking-sidebar-content">
-                             {headerImage && (
-                            <div className="booking-header-image">
-                                <img src={headerImage} alt="Imagen cabecera" />
-                            </div>
-                        )}
+                            {headerImage && (
+                                <div className="booking-header-image">
+                                    <img src={headerImage} alt="Imagen cabecera" />
+                                </div>
+                            )}
                             <h2>Reserva tu cita</h2>
 
                             {confirmationMessage ? (
@@ -273,42 +288,81 @@ export default function BookingModal() {
                                 </div>
                             ) : !selectedCompany ? (
                                 <>
-                                    <p>Selecciona tu tienda más cercana</p>
-                                    {loadingStores ? (
-                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
-                                            <svg width="36" height="36" viewBox="0 0 100 100">
-                                                <circle
-                                                    cx="50"
-                                                    cy="50"
-                                                    r="40"
-                                                    stroke="#000"
-                                                    strokeWidth="10"
-                                                    fill="none"
-                                                    strokeDasharray="188.5"
-                                                    strokeDashoffset="188.5"
-                                                >
-                                                    <animate
-                                                        attributeName="stroke-dashoffset"
-                                                        values="188.5;0"
-                                                        dur="1s"
-                                                        repeatCount="indefinite"
-                                                    />
-                                                </circle>
-                                            </svg>
-                                        </div>
+                                    {!selectedCity ? (
+                                        <>
+                                            <p>Selecciona tu ciudad</p>
+                                            {loadingStores ? (
+                                                <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                                                    <svg width="36" height="36" viewBox="0 0 100 100">
+                                                        <circle
+                                                            cx="50"
+                                                            cy="50"
+                                                            r="40"
+                                                            stroke="#000"
+                                                            strokeWidth="10"
+                                                            fill="none"
+                                                            strokeDasharray="188.5"
+                                                            strokeDashoffset="188.5"
+                                                        >
+                                                            <animate
+                                                                attributeName="stroke-dashoffset"
+                                                                values="188.5;0"
+                                                                dur="1s"
+                                                                repeatCount="indefinite"
+                                                            />
+                                                        </circle>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <select onChange={handleCityChange} defaultValue="">
+                                                    <option value="" disabled>Selecciona una ciudad</option>
+                                                    {cities.map(city => (
+                                                        <option key={city} value={city}>{city}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </>
                                     ) : (
-                                        <select onChange={handleCompanyChange} defaultValue="">
-                                            <option value="" disabled>Selecciona una tienda</option>
-                                            {companies
-                                                .filter(company => allowedStores.length === 0 || allowedStores.includes(company.id))
-                                                .map(company => (
-                                                    <option key={company.id} value={company.id}>{company.name}</option>
-                                                ))}
-
-                                        </select>
+                                        <>
+                                            <button onClick={() => setSelectedCity(null)} style={{ marginBottom: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                ← Volver a ciudades
+                                            </button>
+                                            <p>Selecciona tu tienda más cercana</p>
+                                            {loadingStores ? (
+                                                <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                                                    <svg width="36" height="36" viewBox="0 0 100 100">
+                                                        <circle
+                                                            cx="50"
+                                                            cy="50"
+                                                            r="40"
+                                                            stroke="#000"
+                                                            strokeWidth="10"
+                                                            fill="none"
+                                                            strokeDasharray="188.5"
+                                                            strokeDashoffset="188.5"
+                                                        >
+                                                            <animate
+                                                                attributeName="stroke-dashoffset"
+                                                                values="188.5;0"
+                                                                dur="1s"
+                                                                repeatCount="indefinite"
+                                                            />
+                                                        </circle>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <select onChange={handleCompanyChange} defaultValue="">
+                                                    <option value="" disabled>Selecciona una tienda</option>
+                                                    {filteredCompanies.map(company => (
+                                                        <option key={company.id} value={company.id}>{company.name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </>
                                     )}
                                 </>
                             ) : (
+
                                 <>
                                     {selectedCompany && !selectedTime && (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
