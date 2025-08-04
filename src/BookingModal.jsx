@@ -33,7 +33,9 @@ export default function BookingModal() {
         allowedStores.length === 0 || allowedStores.includes(company.id)
     );
 
-    const cities = [...new Set(allowedCompanies.map(company => company.city).filter(Boolean))].sort();
+    const cities = [...new Set(allowedCompanies.map(company => company.city).filter(Boolean))]
+  .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+
 
     const filteredCompanies = allowedCompanies.filter(company => company.city === selectedCity);
 
