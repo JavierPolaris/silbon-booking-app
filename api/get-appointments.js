@@ -9,18 +9,34 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    const companyId = process.env.TIMIFY_COMPANY_ID; // asegúrate de tenerlo en tus variables
+
+    // Fechas: últimos 3 días para asegurar que haya contenido
+    const timezone = 'Europe/Madrid'; // o el que uses
+    const today = new Date();
+    const from = new Date(today);
+    from.setDate(today.getDate() - 3);
+
+    const from_date = from.toISOString().split('T')[0];
+    const to_date = today.toISOString().split('T')[0];
+
+    const from_time = `${from_date} 00:00`;
+    const to_time = `${to_date} 23:59`;
 
     const { data } = await axios.get('https://api.timify.com/v1/appointments', {
       headers: {
         Authorization: `Bearer ${token}`,
+        'company-id': companyId,
         'Content-Type': 'application/json'
       },
       params: {
-        from: '2024-01-01T00:00:00Z',
-        to: '2025-12-31T23:59:59Z',
-        with_customer: true,
-        with_service: true,
-        with_resource: true
+        timezone,
+        from_date,
+        to_date,
+        from_time,
+        to_time,
+        limit: 50,
+        page: 1
       }
     });
 
@@ -28,19 +44,9 @@ export default async function handler(req, res) {
       id: appointment.id,
       start: appointment.start,
       end: appointment.end,
-      customer: {
-        firstName: appointment.customer?.firstName,
-        lastName: appointment.customer?.lastName,
-        email: appointment.customer?.email
-      },
-      service: {
-        id: appointment.service?.id,
-        name: appointment.service?.name
-      },
-      resource: {
-        id: appointment.resource?.id,
-        name: appointment.resource?.name
-      }
+      customer_id: appointment.customer_id,
+      service_id: appointment.service_id,
+      resource_id: appointment.resource_id
     }));
 
     res.status(200).json(simplified);
