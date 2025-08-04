@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function getTimifyToken() {
+export async function getTimifyAdminToken() {
   const clientId = process.env.TIMIFY_CLIENT_ID;
   const clientSecret = process.env.TIMIFY_CLIENT_SECRET;
 
@@ -10,16 +10,17 @@ export async function getTimifyToken() {
   }
 
   try {
-    const response = await axios.post('https://api.timify.com/v1/auth/token', {
-      appid: clientId,
-      appsecret: clientSecret
+    const response = await axios.post('https://connect.timify.com/oauth/token', {
+      grant_type: 'client_credentials',
+      client_id: clientId,
+      client_secret: clientSecret
     });
 
-    console.log("✅ Token recibido:", response.data); // <-- para debug
-    return response.data.accessToken;
+    console.log("✅ Token con scopes recibidos:", response.data.scope);
+    return response.data.access_token;
 
   } catch (error) {
-    console.error('❌ Error al obtener token:', error.response?.data || error.message);
+    console.error('❌ Error al obtener token (Admin API):', error.response?.data || error.message);
     return null;
   }
 }
