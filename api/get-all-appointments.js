@@ -70,17 +70,17 @@ export default async function handler(req, res) {
           },
         });
 
-        const appointments = appointmentsForBranch.data || [];
+        const appointments = appointmentsResponse.data || [];
         console.log(`📅 Citas obtenidas para la sucursal ${companyId}:`, appointments);
 
-        appointmentsForBranch.push(...appointments);
+        appointmentsResponse.push(...appointments);
         hasMore = appointments.length === 50;
         page++;
       }
 
       groupedAppointments.push({
         branch_id: companyId,
-        appointments: appointmentsForBranch,
+        appointments: appointmentsResponse,
       });
     }
 
