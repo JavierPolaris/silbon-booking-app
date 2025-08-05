@@ -70,7 +70,7 @@ export default async function handler(req, res) {
           },
         });
 
-        const appointments = appointmentsResponse.data || [];
+        const appointments = appointmentsForBranch.data || [];
         console.log(`📅 Citas obtenidas para la sucursal ${companyId}:`, appointments);
 
         appointmentsForBranch.push(...appointments);
