@@ -9,8 +9,11 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    console.log('🪪 token completo:', token); // DEBUG TOKEN
+
     const accessToken = token.accessToken;
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+    console.log('🏢 enterpriseId:', enterpriseId); // DEBUG ENV VAR
 
     if (!accessToken || !enterpriseId) {
       return res.status(401).json({ error: 'Token o enterpriseId inválido' });
@@ -38,10 +41,14 @@ export default async function handler(req, res) {
     });
 
     const branches = companiesData.data.companies || [];
+    console.log(`🏬 ${branches.length} sucursales encontradas`);
+
     const allAppointments = [];
 
     for (const branch of branches) {
       const companyId = branch.id;
+      console.log(`🔍 Consultando citas para sucursal: ${companyId}`);
+
       let page = 1;
       let hasMore = true;
 
@@ -64,6 +71,7 @@ export default async function handler(req, res) {
         });
 
         const appointments = data.data || [];
+        console.log(`📅 Página ${page} → ${appointments.length} citas`);
 
         allAppointments.push(
           ...appointments.map(appointment => ({
