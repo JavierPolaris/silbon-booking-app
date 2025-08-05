@@ -28,10 +28,10 @@ export default async function handler(req, res) {
     yesterday.setDate(today.getDate() - 1);
 
     const dateStr = yesterday.toISOString().split('T')[0];
- const encodeTime = (dateStr, timeStr) => encodeURIComponent(`${dateStr} ${timeStr}`);
+const from_time = `${dateStr} 00:00`;
+const to_time = `${dateStr} 23:55`;
 
-const from_time = encodeTime(dateStr, '00:00');
-const to_time = encodeTime(dateStr, '23:55');
+
 
 
 
