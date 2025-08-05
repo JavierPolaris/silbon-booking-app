@@ -73,24 +73,18 @@ export default async function handler(req, res) {
         const appointments = appointmentsResponse.data || [];
         console.log(`📅 Citas obtenidas para la sucursal ${companyId}:`, appointments);
 
-        allAppointments.push(
-          ...appointments.map((appointment) => ({
-            id: appointment.id,
-            start: appointment.start,
-            end: appointment.end,
-            customer_id: appointment.customer_id,
-            service_id: appointment.service_id,
-            resource_id: appointment.resource_id,
-            branch_id: companyId,
-          }))
-        );
-
+        appointmentsForBranch.push(...appointments);
         hasMore = appointments.length === 50;
         page++;
       }
+
+      groupedAppointments.push({
+        branch_id: companyId,
+        appointments: appointmentsForBranch,
+      });
     }
 
-    res.status(200).json(allAppointments);
+    res.status(200).json(groupedAppointments);
   } catch (error) {
     console.error('❌ Error al obtener citas:', error.response?.data || error.message);
     res.status(500).json({
