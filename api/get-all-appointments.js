@@ -2,6 +2,12 @@
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
+axios.interceptors.request.use((config) => {
+  console.log('🌍 URL FINAL:', config.url);
+  console.log('📦 Params:', config.params);
+  return config;
+});
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -22,8 +28,11 @@ export default async function handler(req, res) {
     yesterday.setDate(today.getDate() - 1);
 
     const dateStr = yesterday.toISOString().split('T')[0];
-    const from_time = `${dateStr} 00:00`;
-    const to_time = `${dateStr} 23:55`;
+ const encodeTime = (dateStr, timeStr) => encodeURIComponent(`${dateStr} ${timeStr}`);
+
+const from_time = encodeTime(dateStr, '00:00');
+const to_time = encodeTime(dateStr, '23:55');
+
 
 
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
@@ -54,15 +63,15 @@ for (const companyId of companyIds) {
             'company-id': companyId,
             'Content-Type': 'application/json',
           },
-          params: {
-            timezone,
-            from_date: dateStr,
-            to_date: dateStr,
-            from_time,
-            to_time,
-            limit: 50,
-            page,
-          },
+params: {
+  timezone,
+  from_date: dateStr,
+  to_date: dateStr,
+  from_time,
+  to_time,
+  limit: 50,
+  page,
+},
         });
 
         const appointments = appointmentsResponse.data || [];
