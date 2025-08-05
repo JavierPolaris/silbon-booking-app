@@ -47,10 +47,13 @@ export default async function handler(req, res) {
     console.log("📦 Respuesta de Timify:", data.data.companyIds);
     const companyIds = data.data.companyIds;
 
-    const allAppointments = [];
+
+    const groupedAppointments = [];
+
     for (const companyId of companyIds) {
       let page = 1;
       let hasMore = true;
+      let appointmentsForBranch = [];
 
       while (hasMore) {
         const { data: appointmentsResponse } = await axios.get('https://api.timify.com/v1/appointments', {
@@ -73,16 +76,17 @@ export default async function handler(req, res) {
         const appointments = appointmentsResponse.data || [];
         console.log(`📅 Citas obtenidas para la sucursal ${companyId}:`, appointments);
 
-        appointmentsResponse.push(...appointments);
+        appointmentsForBranch.push(...appointments);
         hasMore = appointments.length === 50;
         page++;
       }
 
       groupedAppointments.push({
         branch_id: companyId,
-        appointments: appointmentsResponse,
+        appointments: appointmentsForBranch,
       });
     }
+
 
     res.status(200).json(groupedAppointments);
   } catch (error) {
