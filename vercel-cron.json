@@ -1,0 +1,6 @@
+[
+  {
+    "path": "/api/cron-upload",
+    "schedule": "0 7 * * 1"
+  }
+]

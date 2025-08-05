@@ -2,10 +2,5 @@
   "rewrites": [
     { "source": "/tiendas", "destination": "/" },
     { "source": "/(.*)", "destination": "/" }
-  ],
-  "functions": {
-    "api/cron-upload.js": {
-      "schedule": "0 9 * * 1"
-    }
-  }
+  ]
 }
