@@ -9,14 +9,13 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    const accessToken = token.accessToken || token; // por si ya viene como string
-    const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+    console.log("🪪 Token obtenido:", token);
 
-    if (!accessToken || !enterpriseId) {
-      return res.status(401).json({ error: 'Token o enterpriseId inválido' });
+    if (!token) {
+      return res.status(401).json({ error: 'Token inválido' });
     }
 
-    const timezone = 'Europe/Madrid';
+     const timezone = 'Europe/Madrid';
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
@@ -25,10 +24,13 @@ export default async function handler(req, res) {
     const from_time = `${dateStr} 00:00`;
     const to_time = `${dateStr} 23:55`;
 
-    // 👇 Obtener solo los companyIds
-    const { data: companiesResponse } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
+    
+    const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
+    console.log("🏢 enterpriseId:", enterpriseId);
+
+    const { data } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       params: {
         enterprise_id: enterpriseId,
@@ -36,11 +38,11 @@ export default async function handler(req, res) {
       },
     });
 
-    const companyIds = companiesResponse.data.companyIds || [];
+    console.log("📦 Respuesta de Timify:", data.data.companyIds);
+    const companyIds = data.data.companyIds;
 
-    const allAppointments = [];
-
-    for (const companyId of companyIds) {
+     const allAppointments = [];
+for (const companyId of companyIds) {
       let page = 1;
       let hasMore = true;
 
