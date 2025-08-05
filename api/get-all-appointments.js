@@ -2,11 +2,7 @@
 import axios from 'axios';
 import { getTimifyToken } from '../utils/getToken.js';
 
-axios.interceptors.request.use((config) => {
-  console.log('🌍 URL FINAL:', config.url);
-  console.log('📦 Params:', config.params);
-  return config;
-});
+
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
