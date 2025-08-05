@@ -9,9 +9,10 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
+    const accessToken = token.accessToken;
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
 
-    if (!token || !enterpriseId) {
+    if (!accessToken || !enterpriseId) {
       return res.status(401).json({ error: 'Token o enterpriseId inválido' });
     }
 
@@ -28,7 +29,7 @@ export default async function handler(req, res) {
     // 🔁 Obtener todas las sucursales
     const { data: companiesData } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${token.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       params: {
         enterprise_id: enterpriseId,
@@ -37,7 +38,6 @@ export default async function handler(req, res) {
     });
 
     const branches = companiesData.data.companies || [];
-
     const allAppointments = [];
 
     for (const branch of branches) {
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
       while (hasMore) {
         const { data } = await axios.get('https://api.timify.com/v1/appointments', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
             'company-id': companyId,
             'Content-Type': 'application/json'
           },
