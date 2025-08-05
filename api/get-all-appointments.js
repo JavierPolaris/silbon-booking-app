@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     // 🔁 Obtener todas las sucursales
     const { data: companiesData } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.accessToken}`,
       },
       params: {
         enterprise_id: enterpriseId,
