@@ -9,18 +9,26 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    console.log("🪪 Token obtenido:", token);
+    const accessToken = token.accessToken || token; // por si ya viene como string
+    const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
 
-    if (!token) {
-      return res.status(401).json({ error: 'Token inválido' });
+    if (!accessToken || !enterpriseId) {
+      return res.status(401).json({ error: 'Token o enterpriseId inválido' });
     }
 
-    const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-    console.log("🏢 enterpriseId:", enterpriseId);
+    const timezone = 'Europe/Madrid';
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
 
-    const { data } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
+    const dateStr = yesterday.toISOString().split('T')[0];
+    const from_time = `${dateStr} 00:00`;
+    const to_time = `${dateStr} 23:55`;
+
+    // 👇 Obtener solo los companyIds
+    const { data: companiesResponse } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       params: {
         enterprise_id: enterpriseId,
@@ -28,12 +36,57 @@ export default async function handler(req, res) {
       },
     });
 
-    console.log("📦 Respuesta de Timify:", data.data.companyIds);
+    const companyIds = companiesResponse.data.companyIds || [];
 
-    // ESTA ES LA LÍNEA IMPORTANTE
-    res.status(200).json(data.data.companies || []);
-  } catch (err) {
-    console.error('❌ Error al obtener sucursales:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    const allAppointments = [];
+
+    for (const companyId of companyIds) {
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const { data: appointmentsResponse } = await axios.get('https://api.timify.com/v1/appointments', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'company-id': companyId,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            timezone,
+            from_date: dateStr,
+            to_date: dateStr,
+            from_time,
+            to_time,
+            limit: 50,
+            page,
+          },
+        });
+
+        const appointments = appointmentsResponse.data || [];
+
+        allAppointments.push(
+          ...appointments.map((appointment) => ({
+            id: appointment.id,
+            start: appointment.start,
+            end: appointment.end,
+            customer_id: appointment.customer_id,
+            service_id: appointment.service_id,
+            resource_id: appointment.resource_id,
+            branch_id: companyId,
+          }))
+        );
+
+        hasMore = appointments.length === 50;
+        page++;
+      }
+    }
+
+    res.status(200).json(allAppointments);
+  } catch (error) {
+    console.error('❌ Error al obtener citas:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Error al obtener citas',
+      details: error.response?.data || error.message,
+    });
   }
 }
