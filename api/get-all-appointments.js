@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       },
     });
 
-    console.log("📦 Respuesta de Timify:", data);
+    console.log("📦 Respuesta de Timify:", data.companyIds);
 
     // ESTA ES LA LÍNEA IMPORTANTE
     res.status(200).json(data.data.companies || []);
