@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const from_time = `${dateStr} 00:00`;
     const to_time = `${dateStr} 23:55`;
 
-    
+
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
     console.log("🏢 enterpriseId:", enterpriseId);
 
@@ -49,7 +49,7 @@ for (const companyId of companyIds) {
       while (hasMore) {
         const { data: appointmentsResponse } = await axios.get('https://api.timify.com/v1/appointments', {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
             'company-id': companyId,
             'Content-Type': 'application/json',
           },
