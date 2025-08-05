@@ -9,17 +9,17 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    console.log('🪪 token completo:', token); // DEBUG TOKEN
-
     const accessToken = token.accessToken;
     const enterpriseId = process.env.TIMIFY_ENTERPRISE_ID;
-    console.log('🏢 enterpriseId:', enterpriseId); // DEBUG ENV VAR
+
+    console.log('🪪 token:', accessToken);
+    console.log('🏢 enterpriseId:', enterpriseId);
 
     if (!accessToken || !enterpriseId) {
       return res.status(401).json({ error: 'Token o enterpriseId inválido' });
     }
 
-    // 🕐 Día anterior
+    // 🕐 Obtener fecha del día anterior
     const timezone = 'Europe/Madrid';
     const today = new Date();
     const yesterday = new Date(today);
@@ -27,9 +27,9 @@ export default async function handler(req, res) {
 
     const dateStr = yesterday.toISOString().split('T')[0];
     const from_time = `${dateStr} 00:00`;
-    const to_time = `${dateStr} 23:55`; // ⚠️ Timify requiere múltiplos de 5
+    const to_time = `${dateStr} 23:55`; // Timify requiere múltiplos de 5
 
-    // 🔁 Obtener todas las sucursales
+    // 🔁 Obtener companyIds de todas las sucursales
     const { data: companiesData } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -40,15 +40,11 @@ export default async function handler(req, res) {
       },
     });
 
-    const branches = companiesData.data.companies || [];
-    console.log(`🏬 ${branches.length} sucursales encontradas`);
-
+    const companyIds = companiesData.data.companyIds || [];
     const allAppointments = [];
 
-    for (const branch of branches) {
-      const companyId = branch.id;
-      console.log(`🔍 Consultando citas para sucursal: ${companyId}`);
-
+    for (const companyId of companyIds) {
+      console.log(`📍 Consultando citas para sucursal: ${companyId}`);
       let page = 1;
       let hasMore = true;
 
