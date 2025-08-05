@@ -22,14 +22,14 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token inválido' });
     }
 
-     const timezone = 'Europe/Madrid';
+    const timezone = 'Europe/Madrid';
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
     const dateStr = yesterday.toISOString().split('T')[0];
-const from_time = `${dateStr} 00:00`;
-const to_time = `${dateStr} 23:55`;
+    const from_time = `${dateStr} 00:00`;
+    const to_time = `${dateStr} 23:55`;
 
 
 
@@ -51,8 +51,8 @@ const to_time = `${dateStr} 23:55`;
     console.log("📦 Respuesta de Timify:", data.data.companyIds);
     const companyIds = data.data.companyIds;
 
-     const allAppointments = [];
-for (const companyId of companyIds) {
+    const allAppointments = [];
+    for (const companyId of companyIds) {
       let page = 1;
       let hasMore = true;
 
@@ -63,18 +63,19 @@ for (const companyId of companyIds) {
             'company-id': companyId,
             'Content-Type': 'application/json',
           },
-params: {
-  timezone,
-  from_date: dateStr,
-  to_date: dateStr,
-  from_time,
-  to_time,
-  limit: 50,
-  page,
-},
+          params: {
+            timezone,
+            from_date: dateStr,
+            to_date: dateStr,
+            from_time,
+            to_time,
+            limit: 50,
+            page,
+          },
         });
 
         const appointments = appointmentsResponse.data || [];
+        console.log(`📅 Citas obtenidas para la sucursal ${companyId}:`, appointments);
 
         allAppointments.push(
           ...appointments.map((appointment) => ({
