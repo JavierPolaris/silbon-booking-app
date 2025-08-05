@@ -27,7 +27,7 @@ export async function uploadJsonToOneLake(jsonData, fileName = "appointments.jso
   // 1. Crear archivo
   await axios.put(`${filePath}?resource=file`, null, {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`, 
       'Content-Length': 0,
     },
   });
