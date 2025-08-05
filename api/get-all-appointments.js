@@ -9,9 +9,10 @@ export default async function handler(req, res) {
 
   try {
     const token = await getTimifyToken();
-    console.log("🪪 Token obtenido:", token);
+    const accessToken = typeof token === 'string' ? token : token.accessToken;
+    console.log("🪪 Token obtenido:", accessToken);
 
-    if (!token) {
+    if (!accessToken) {
       return res.status(401).json({ error: 'Token inválido' });
     }
 
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
 
     const { data } = await axios.get('https://api.timify.com/v1/booker-services/companies', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       params: {
         enterprise_id: enterpriseId,
@@ -49,7 +50,7 @@ for (const companyId of companyIds) {
       while (hasMore) {
         const { data: appointmentsResponse } = await axios.get('https://api.timify.com/v1/appointments', {
           headers: {
-            Authorization: `Bearer ${token.accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
             'company-id': companyId,
             'Content-Type': 'application/json',
           },
