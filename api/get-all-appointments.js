@@ -59,7 +59,7 @@ for (const companyId of companyIds) {
       while (hasMore) {
         const { data: appointmentsResponse } = await axios.get('https://api.timify.com/v1/appointments', {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: accessToken,
             'company-id': companyId,
             'Content-Type': 'application/json',
           },
