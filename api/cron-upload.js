@@ -1,16 +1,29 @@
-// api/cron-upload.js
 import { uploadJsonToOneLake } from '../src/uploadToOneLake.js';
+import getAppointmentsHandler from './get-all-appointments.js';
 
 export default async function handler(req, res) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
   try {
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
-    const host = req.headers.host;
-    const url = `${protocol}://${host}/api/get-all-appointments`;
+    // Simulamos una respuesta fake para capturar el JSON que devuelve get-all-appointments
+    const fakeReq = { method: 'GET' };
+    let data = null;
 
-    const response = await fetch(url);
-    const data = await response.json();
+    const fakeRes = {
+      status(code) {
+        this.statusCode = code;
+        return this;
+      },
+      json(jsonData) {
+        data = jsonData;
+      }
+    };
+
+    await getAppointmentsHandler(fakeReq, fakeRes);
+
+    if (!data) throw new Error('No se pudo obtener la data de las citas');
 
     const fileName = `appointments-${new Date().toISOString().split('T')[0]}.json`;
 

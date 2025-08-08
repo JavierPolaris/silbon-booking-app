@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron-upload",
-      "schedule": "40 9 * * *"
+      "schedule": "54 9 * * *"
     }
   ],
   "rewrites": [
