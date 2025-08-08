@@ -1,4 +1,11 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron-upload",
+      "schedule": "40 9 * * *"
+    }
+  ],
   "rewrites": [
     { "source": "/tiendas", "destination": "/" },
     { "source": "/(.*)", "destination": "/" }
