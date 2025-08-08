@@ -2,11 +2,5 @@
   "rewrites": [
     { "source": "/tiendas", "destination": "/" },
     { "source": "/(.*)", "destination": "/" }
-  ],
-  "cron": [
-    {
-      "path": "/api/cron-upload",
-      "schedule": "30 9 * * *"
-    }
   ]
 }
