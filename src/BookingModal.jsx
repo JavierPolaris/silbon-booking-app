@@ -4,7 +4,12 @@ import BookingCalendar from './BookingCalendar';
 
 export default function BookingModal() {
     const urlParams = new URLSearchParams(window.location.search);
-    const allowedStores = urlParams.get("allowedStores")?.split(",") || [];
+    const allowedStores = urlParams
+        .get("allowedStores")
+        ?.split(",")
+        .map(id => id.trim())
+        .filter(Boolean) || [];
+
     const headerImage = urlParams.get("headerImage");
     const closeButtonColor = urlParams.get("closeButtonColor") || 'black';
     const [visible, setVisible] = useState(false);
@@ -34,7 +39,7 @@ export default function BookingModal() {
     );
 
     const cities = [...new Set(allowedCompanies.map(company => company.city).filter(Boolean))]
-  .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+        .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
 
 
     const filteredCompanies = allowedCompanies.filter(company => company.city === selectedCity);
