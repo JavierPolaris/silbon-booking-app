@@ -5,17 +5,17 @@ import BookingCalendar from './BookingCalendar';
 export default function BookingModal() {
     const urlParams = new URLSearchParams(window.location.search);
     const raw = urlParams.get("allowedStores") || "";
-    console.log("RAW head:", raw.slice(0, 200));
-    console.log("RAW contains Jaen:", raw.includes("69690b3f0794539b7b6af307"));
+    // console.log("RAW head:", raw.slice(0, 200));
+    // console.log("RAW contains Jaen:", raw.includes("69690b3f0794539b7b6af307"));
 
     const allowedStores = urlParams
         .get("allowedStores")
         ?.split(",")
         .map(id => id.trim())
         .filter(Boolean) || [];
-    console.log("allowedStores PARSED:", allowedStores);
-    console.log("allowedStores RAW length:", urlParams.get("allowedStores")?.length);
-    console.log("allowedStores RAW tail:", urlParams.get("allowedStores")?.slice(-120));
+    // console.log("allowedStores PARSED:", allowedStores);
+    // console.log("allowedStores RAW length:", urlParams.get("allowedStores")?.length);
+    // console.log("allowedStores RAW tail:", urlParams.get("allowedStores")?.slice(-120));
 
     const headerImage = urlParams.get("headerImage");
     const closeButtonColor = urlParams.get("closeButtonColor") || 'black';
