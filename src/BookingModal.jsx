@@ -10,6 +10,9 @@ export default function BookingModal() {
         .map(id => id.trim())
         .filter(Boolean) || [];
     console.log("allowedStores PARSED:", allowedStores);
+    console.log("allowedStores RAW length:", urlParams.get("allowedStores")?.length);
+    console.log("allowedStores RAW tail:", urlParams.get("allowedStores")?.slice(-120));
+
     const headerImage = urlParams.get("headerImage");
     const closeButtonColor = urlParams.get("closeButtonColor") || 'black';
     const [visible, setVisible] = useState(false);
