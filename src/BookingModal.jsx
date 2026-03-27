@@ -41,6 +41,18 @@ export default function BookingModal() {
     const [loadingAvailability, setLoadingAvailability] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
 
+    const shouldAutoSelectCompany = allowedStores.length === 1;
+
+    const applyCompanySelection = (company) => {
+        setSelectedCompany(company);
+        setFieldIds(company?.customerFields || []);
+        setSelectedService(null);
+        setAvailability([]);
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setServices(company?.services || []);
+    };
+
     const allowedCompanies = companies.filter(company =>
         allowedStores.length === 0 || allowedStores.includes(company.id)
     );
@@ -114,13 +126,7 @@ export default function BookingModal() {
     const handleCompanyChange = (e) => {
         const companyId = e.target.value;
         const company = companies.find(c => c.id === companyId);
-        setSelectedCompany(company);
-        setFieldIds(company?.customerFields || []);
-        setSelectedService(null);
-        setAvailability([]);
-        setSelectedDate(null);
-        setSelectedTime(null);
-        setServices(company?.services || []);
+        applyCompanySelection(company);
     };
 
     const handleBackToCompanies = () => {
@@ -131,7 +137,20 @@ export default function BookingModal() {
         setAvailability([]);
         setSelectedDate(null);
         setSelectedTime(null);
+
+        if (!shouldAutoSelectCompany) {
+            setSelectedCity(null);
+        }
     };
+
+    useEffect(() => {
+        if (!visible || selectedCompany || !shouldAutoSelectCompany) return;
+        if (allowedCompanies.length !== 1) return;
+
+        const company = allowedCompanies[0];
+        setSelectedCity(company?.city || null);
+        applyCompanySelection(company);
+    }, [visible, selectedCompany, shouldAutoSelectCompany, allowedCompanies]);
 
     const handleServiceChange = async (e) => {
         const serviceId = e.target.value;
@@ -294,7 +313,7 @@ export default function BookingModal() {
                                         </>
                                     ) : (
                                         <>
-                                            {cities.length > 0 && (
+                                            {cities.length > 0 && !shouldAutoSelectCompany && (
                                                 <button onClick={() => setSelectedCity(null)} style={{ marginBottom: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
                                                     ← Volver a ciudades
                                                 </button>
@@ -323,7 +342,9 @@ export default function BookingModal() {
                                 <>
                                     {selectedCompany && !selectedTime && (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
-                                            <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                                            {!shouldAutoSelectCompany && (
+                                                <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
+                                            )}
                                             <h3>{selectedCompany.name}</h3>
                                         </div>
                                     )}
@@ -396,3 +417,4 @@ export default function BookingModal() {
         </>
     );
 }
+
