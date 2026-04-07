@@ -9,6 +9,16 @@ function formatDateAsLocalISO(date) {
   return `${year}-${month}-${day}`;
 }
 
+function chunkArray(items, chunkSize) {
+  const chunks = [];
+
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+
+  return chunks;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Metodo no permitido' });
@@ -26,10 +36,15 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token invalido' });
     }
 
-    const configuredLookaheadDays = Number.parseInt(process.env.TIMIFY_BOOKING_LOOKAHEAD_DAYS ?? '365', 10);
+    const configuredLookaheadDays = Number.parseInt(process.env.TIMIFY_BOOKING_LOOKAHEAD_DAYS ?? '90', 10);
     const lookaheadDays = Number.isFinite(configuredLookaheadDays) && configuredLookaheadDays > 0
       ? configuredLookaheadDays
-      : 365;
+      : 90;
+
+    const configuredChunkSize = Number.parseInt(process.env.TIMIFY_BOOKING_CHUNK_DAYS ?? '30', 10);
+    const chunkSize = Number.isFinite(configuredChunkSize) && configuredChunkSize > 0
+      ? configuredChunkSize
+      : 30;
 
     const days = [];
     const today = new Date();
@@ -40,21 +55,28 @@ export default async function handler(req, res) {
       days.push(formatDateAsLocalISO(day));
     }
 
-    const { data } = await axios.get('https://api.timify.com/v1/booker-services/availabilities', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      params: {
-        company_id: companyId,
-        service_id: serviceId,
-        days
-      }
-    });
+    const dayChunks = chunkArray(days, chunkSize);
+    const availabilityResponses = await Promise.all(
+      dayChunks.map((chunk) =>
+        axios.get('https://api.timify.com/v1/booker-services/availabilities', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            company_id: companyId,
+            service_id: serviceId,
+            days: chunk
+          },
+          timeout: 15000
+        })
+      )
+    );
 
-    const simplified = data.data?.slots?.map((slot) => ({
+    const slots = availabilityResponses.flatMap((response) => response.data?.data?.slots || []);
+    const simplified = slots.map((slot) => ({
       day: slot.day,
       times: slot.times
-    })) || [];
+    }));
 
     return res.status(200).json(simplified);
   } catch (err) {
