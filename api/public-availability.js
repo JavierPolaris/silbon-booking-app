@@ -36,10 +36,10 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token invalido' });
     }
 
-    const configuredLookaheadDays = Number.parseInt(process.env.TIMIFY_BOOKING_LOOKAHEAD_DAYS ?? '90', 10);
+    const configuredLookaheadDays = Number.parseInt(process.env.TIMIFY_BOOKING_LOOKAHEAD_DAYS ?? '365', 10);
     const lookaheadDays = Number.isFinite(configuredLookaheadDays) && configuredLookaheadDays > 0
       ? configuredLookaheadDays
-      : 90;
+      : 365;
 
     const configuredChunkSize = Number.parseInt(process.env.TIMIFY_BOOKING_CHUNK_DAYS ?? '30', 10);
     const chunkSize = Number.isFinite(configuredChunkSize) && configuredChunkSize > 0
