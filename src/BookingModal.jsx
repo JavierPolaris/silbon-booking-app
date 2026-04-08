@@ -41,6 +41,18 @@ export default function BookingModal() {
     const [loadingAvailability, setLoadingAvailability] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
 
+    const getCompanyLabel = (company) => {
+        if (!company) return '';
+
+        const address = (company.address || '').trim();
+        if (!address) return company.name;
+
+        const street = address.split(',')[0]?.trim();
+        if (!street) return company.name;
+
+        return `${company.name} - ${street}`;
+    };
+
     const shouldAutoSelectCompany = allowedStores.length === 1;
 
     const applyCompanySelection = (company) => {
@@ -103,7 +115,8 @@ export default function BookingModal() {
                         const matchingCompany = companiesData.find(c => c.id === branch.id);
                         return {
                             ...branch,
-                            city: matchingCompany?.city || null
+                            city: matchingCompany?.city || null,
+                            address: matchingCompany?.address || ''
                         };
                     });
                     setCompanies(companiesWithCity);
@@ -331,7 +344,7 @@ export default function BookingModal() {
                                                 <select onChange={handleCompanyChange} defaultValue="">
                                                     <option value="" disabled>Selecciona una tienda</option>
                                                     {(cities.length > 0 ? filteredCompanies : allowedCompanies).map(company => (
-                                                        <option key={company.id} value={company.id}>{company.name}</option>
+                                                        <option key={company.id} value={company.id}>{getCompanyLabel(company)}</option>
                                                     ))}
                                                 </select>
                                             )}
