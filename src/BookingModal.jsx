@@ -365,11 +365,14 @@ export default function BookingModal() {
                             ) : (
                                 <>
                                     {selectedCompany && !selectedTime && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '1rem' }}>
                                             {!shouldAutoSelectCompany && (
                                                 <button onClick={handleBackToCompanies} style={{ fontSize: '1.5rem', background: 'none', border: 'none' }}>←</button>
                                             )}
-                                            <h3>{selectedCompany.name}</h3>
+                                            <div className="booking-selected-store">
+                                                <h3>{selectedCompany.name}</h3>
+                                                <p className="booking-selected-store__address">{getCompanyStreet(selectedCompany)}</p>
+                                            </div>
                                         </div>
                                     )}
                                     {!selectedService ? (
