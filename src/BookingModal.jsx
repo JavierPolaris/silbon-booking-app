@@ -43,7 +43,22 @@ export default function BookingModal() {
 
     const getCompanyStreet = (company) => {
         const address = (company?.address || '').trim();
-        return address.split(',')[0]?.trim() || company?.address || '';
+        if (!address) return '';
+
+        const parts = address
+            .split(',')
+            .map(part => part.trim())
+            .filter(Boolean);
+
+        if (parts.length === 0) return '';
+        if (parts.length === 1) return parts[0];
+
+        const secondPart = parts[1];
+        const shouldIncludeSecondPart = /\d/.test(secondPart) || secondPart.length <= 12;
+
+        return shouldIncludeSecondPart
+            ? `${parts[0]}, ${secondPart}`
+            : parts[0];
     };
 
     const shouldAutoSelectCompany = allowedStores.length === 1;

@@ -77,8 +77,9 @@ select option {
 .booking-sidebar-content {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 2rem 2rem 6rem;
   margin-block-end: 30px;
+  box-sizing: border-box;
 }
 .booking-sidebar-content::-webkit-scrollbar {
     display: none;
@@ -239,6 +240,7 @@ form.booking-form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding-bottom: 1rem;
 }
 
 .booking-store-card {
@@ -277,9 +279,9 @@ form.booking-form {
 
 @media screen and (max-width: 768px) {
   .booking-sidebar-content {
-   
-    margin-block-end: 55px;
-}
+    padding: 1.5rem 1.5rem 7rem;
+    margin-block-end: 0;
+  }
   .booking-sidebar {
     width: 100%;
     height: 100vh;
