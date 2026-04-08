@@ -41,16 +41,9 @@ export default function BookingModal() {
     const [loadingAvailability, setLoadingAvailability] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
 
-    const getCompanyLabel = (company) => {
-        if (!company) return '';
-
-        const address = (company.address || '').trim();
-        if (!address) return company.name;
-
-        const street = address.split(',')[0]?.trim();
-        if (!street) return company.name;
-
-        return `${company.name} - ${street}`;
+    const getCompanyStreet = (company) => {
+        const address = (company?.address || '').trim();
+        return address.split(',')[0]?.trim() || company?.address || '';
     };
 
     const shouldAutoSelectCompany = allowedStores.length === 1;
@@ -134,12 +127,6 @@ export default function BookingModal() {
         setSelectedCompany(null);
         setServices([]);
         setSelectedService(null);
-    };
-
-    const handleCompanyChange = (e) => {
-        const companyId = e.target.value;
-        const company = companies.find(c => c.id === companyId);
-        applyCompanySelection(company);
     };
 
     const handleBackToCompanies = () => {
@@ -262,6 +249,8 @@ export default function BookingModal() {
         }
     };
 
+    const companyOptions = cities.length > 0 ? filteredCompanies : allowedCompanies;
+
     return (
         <>
             {visible && (
@@ -341,12 +330,19 @@ export default function BookingModal() {
                                                     </svg>
                                                 </div>
                                             ) : (
-                                                <select onChange={handleCompanyChange} defaultValue="">
-                                                    <option value="" disabled>Selecciona una tienda</option>
-                                                    {(cities.length > 0 ? filteredCompanies : allowedCompanies).map(company => (
-                                                        <option key={company.id} value={company.id}>{getCompanyLabel(company)}</option>
+                                                <div className="booking-store-list" role="list">
+                                                    {companyOptions.map(company => (
+                                                        <button
+                                                            key={company.id}
+                                                            type="button"
+                                                            className="booking-store-card"
+                                                            onClick={() => applyCompanySelection(company)}
+                                                        >
+                                                            <span className="booking-store-card__name">{company.name}</span>
+                                                            <span className="booking-store-card__address">{getCompanyStreet(company)}</span>
+                                                        </button>
                                                     ))}
-                                                </select>
+                                                </div>
                                             )}
                                         </>
                                     )}
